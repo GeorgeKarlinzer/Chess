@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 namespace Chess.Logic
 {
-    internal enum PlayerColor
+    public class Game
     {
-        White,
-        Black
+
+
+        public void Start()
+        {
+            var board = new Board();
+        }
     }
 }

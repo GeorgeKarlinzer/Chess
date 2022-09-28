@@ -1,6 +1,6 @@
-﻿namespace Chess.Logic.Pieces
+﻿namespace Chess.Logic
 {
-    public class Piece
+    internal class Piece
     {
         public PlayerColor Color { get; }
         public Cell Cell { get; }

@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chess.Logic
 {
-    internal enum PlayerColor
+    internal static class BoardPositionExtensions
     {
-        White,
-        Black
     }
 }

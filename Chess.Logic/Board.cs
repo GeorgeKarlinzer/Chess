@@ -1,5 +1,4 @@
-﻿using Chess.Logic.Pieces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,44 +6,44 @@ using System.Threading.Tasks;
 
 namespace Chess.Logic
 {
-    public class Board
+    internal class Board
     {
-        private readonly Cell[,] cells;
+        private readonly Dictionary<PositionEnum, Cell> cellsMap;
         private readonly List<Piece> pieces;
         private readonly Dictionary<Piece, List<Cell>> availibleMovesMap;
 
-        private int move;
-
         public Board()
         {
-            cells = new Cell[8, 8];
-            pieces = new List<Piece>();
-            availibleMovesMap = new Dictionary<Piece, List<Cell>>();
-            move = 1;
+            cellsMap = new();
+            pieces = new();
+            availibleMovesMap = new();
 
-            GenerateSells();
+            GenerateCells();
             GeneratePieces();
         }
         
         private void GeneratePieces()
         {
-            for (int x = 0; x < 8; x++)
-            {
-                for (int y = 0; y < 8; y++)
-                {
+            var white = PlayerColor.White;
+            var black = PlayerColor.Black;
 
-                }
+            for (var pos = PositionEnum.a2; (int)pos < 57; pos += 8)
+            {
+                var whitePiece = new Piece(white, cellsMap[pos]);
+                var blackPiece = new Piece(black, cellsMap[pos + 5]);
+
+                pieces.Add(whitePiece);
+                pieces.Add(blackPiece);
             }
+
+
         }
 
-        private void GenerateSells()
+        private void GenerateCells()
         {
-            for (int x = 0; x < 8; x++)
+            for (var pos = PositionEnum.a1; pos <= PositionEnum.h8; pos++)
             {
-                for (int y = 0; y < 8; y++)
-                {
-                    cells[x, y] = new Cell(x, y);
-                }
+                cellsMap[pos] = new Cell(pos);
             }
         }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chess.Logic
 {
-    public class Move
+    internal class Move
     {
         public int Number { get; }
         public Piece Piece { get; }
