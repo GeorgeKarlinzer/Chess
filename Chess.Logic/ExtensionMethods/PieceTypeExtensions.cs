@@ -4,15 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chess.Logic
+namespace Chess.Logic.ExtensionMethods
 {
-    public class Game
+    internal static class PieceTypeExtensions
     {
-
-
-        public void Start()
-        {
-            var board = new Board();
-        }
     }
 }

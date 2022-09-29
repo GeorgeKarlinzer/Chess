@@ -10,13 +10,13 @@ namespace Chess.Logic
     {
         public int Number { get; }
         public Piece Piece { get; }
-        public Cell TargetCell { get; }
+        public PositionEnum TargetPos { get; }
 
-        public Move(int number, Piece piece, Cell targetCell)
+        public Move(int number, Piece piece, PositionEnum targetPos)
         {
             Number = number;
             Piece = piece;
-            TargetCell = targetCell;
+            TargetPos = targetPos;
         }
     }
 }

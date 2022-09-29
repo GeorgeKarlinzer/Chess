@@ -2,14 +2,21 @@
 {
     internal class Piece
     {
-        public PlayerColor Color { get; }
-        public Cell Cell { get; }
+        public int Id { get; }
+        public PieceType Type { get; }
+        public PieceColor Color { get; }
+        public PositionEnum Position { get; }
 
 
-        public Piece(PlayerColor color, Cell cell)
+        public Piece(PieceType type, PieceColor color, PositionEnum position, int id)
         {
+            Type = type;
             Color = color;
-            Cell = cell;
+            Position = position;
+            Id = id;
         }
+
+        public override string ToString() =>
+            $"{Type} ({Color}): {Position}";
     }
 }

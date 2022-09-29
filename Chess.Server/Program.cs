@@ -24,6 +24,6 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-var game = new Game();
+var board = new Board();
 
 app.Run();

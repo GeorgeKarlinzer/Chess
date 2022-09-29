@@ -1,55 +1,81 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Chess.Logic.PieceType;
+using static Chess.Logic.PieceColor;
+using static Chess.Logic.PositionEnum;
 
 namespace Chess.Logic
 {
-    internal class Board
+    public class Board
     {
-        private readonly Dictionary<PositionEnum, Cell> cellsMap;
-        private readonly List<Piece> pieces;
-        private readonly Dictionary<Piece, List<Cell>> availibleMovesMap;
+        private readonly Dictionary<PositionEnum, Piece> piecesMap;
+
+        private readonly Dictionary<Piece, List<PositionEnum>> availibleMovesMap;
 
         public Board()
         {
-            cellsMap = new();
-            pieces = new();
+            piecesMap = new();
             availibleMovesMap = new();
 
-            GenerateCells();
             GeneratePieces();
         }
         
         private void GeneratePieces()
         {
-            var white = PlayerColor.White;
-            var black = PlayerColor.Black;
-
-            for (var pos = PositionEnum.a2; (int)pos < 57; pos += 8)
+            for (var pos = a2; pos < h8; pos += 8)
             {
-                var whitePiece = new Piece(white, cellsMap[pos]);
-                var blackPiece = new Piece(black, cellsMap[pos + 5]);
-
-                pieces.Add(whitePiece);
-                pieces.Add(blackPiece);
+                AddPiece(Pawn, White, pos);
+                AddPiece(Pawn, Black, pos + 5);
             }
 
+            AddPiece(Rook, White, a1);
+            AddPiece(Rook, White, h1);
+            AddPiece(Rook, Black, a8);
+            AddPiece(Rook, Black, h8);
 
+            AddPiece(Knight, White, b1);
+            AddPiece(Knight, White, g1);
+            AddPiece(Knight, Black, b8);
+            AddPiece(Knight, Black, g8);
+
+            AddPiece(Bishop, White, c1);
+            AddPiece(Knight, White, f1);
+            AddPiece(Knight, Black, c8);
+            AddPiece(Knight, Black, f8);
+
+            AddPiece(Queen, White, d1);
+            AddPiece(Queen, Black, d8);
+
+            AddPiece(King, White, e1);
+            AddPiece(King, Black, e8);
         }
 
-        private void GenerateCells()
+        private void AddPiece(PieceType type, PieceColor color, PositionEnum position)
         {
-            for (var pos = PositionEnum.a1; pos <= PositionEnum.h8; pos++)
-            {
-                cellsMap[pos] = new Cell(pos);
-            }
+            var piece = new Piece(type, color, position, piecesMap.Count);
+            piecesMap[piece.Position] = piece;
+        }
+
+        private List<PositionEnum> CalculateAvailibleMoves(Piece piece)
+        {
+            if (availibleMovesMap.TryGetValue(piece, out var moves))
+                return moves;
+
+            var movementSystem = new MovementSystem();
+
+            var moves = movementSystem.GetMoves(piece);
+
+            return null;
         }
 
         private void MakeMove(Move move)
         {
 
+            availibleMovesMap.Clear();
         }
             
         private bool IsValidMove(Move move)
