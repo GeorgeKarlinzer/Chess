@@ -1,6 +1,6 @@
 ﻿namespace Chess.Logic
 {
-    internal class Piece
+    public class Piece
     {
         public int Id { get; }
         public PieceType Type { get; }

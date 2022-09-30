@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chess.Logic.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,17 +7,19 @@ using System.Threading.Tasks;
 
 namespace Chess.Logic
 {
-    internal class Move
+    public class Move
     {
-        public int Number { get; }
+        public int Id { get; }
         public Piece Piece { get; }
+        public PositionEnum SourcePos { get; }
         public PositionEnum TargetPos { get; }
 
-        public Move(int number, Piece piece, PositionEnum targetPos)
+        public Move(int id, Piece piece, PositionEnum sourcePos, PositionEnum targetPos)
         {
-            Number = number;
+            Id = id;
             Piece = piece;
             TargetPos = targetPos;
+            SourcePos = sourcePos;
         }
     }
 }
