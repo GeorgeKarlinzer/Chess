@@ -14,36 +14,44 @@ namespace Chess.Logic
 {
     public class Match
     {
-        private readonly Dictionary<PositionEnum, Piece> piecesMap;
-        private readonly Dictionary<Piece, List<PositionEnum>> availibleMovesMap;
-
         private readonly List<Move> moves;
+
+        public Dictionary<Piece, List<PositionEnum>> AvailibleMovesMap { get; }
+        public Dictionary<PositionEnum, Piece> PiecesMap { get; }
 
         public Match()
         {
-            piecesMap = new();
-            availibleMovesMap = new();
+            PiecesMap = new();
+            AvailibleMovesMap = new();
 
             moves = new List<Move>();
 
             GeneratePieces();
+
+            foreach (var piece in PiecesMap.Values)
+            {
+                AvailibleMovesMap[piece] = new List<PositionEnum>();
+            }
+
+            AvailibleMovesMap.Where(x => x.Key.Color == White)
+                .Foreach(x => CalculateAvailibleMoves(x.Key));
         }
 
         public void MakeMove(Piece piece, int availibleMoveId, object parameter)
         {
-            var targetPos = availibleMovesMap[piece][availibleMoveId];
+            var targetPos = AvailibleMovesMap[piece][availibleMoveId];
 
             var move = new Move(moves.Count, piece, piece.Position, targetPos);
             moves.Add(move);
 
-            availibleMovesMap.Where(x => x.Key.Color != piece.Color)
+            AvailibleMovesMap.Where(x => x.Key.Color != piece.Color)
                 .Foreach(x => CalculateAvailibleMoves(x.Key));
         }
 
         #region Moves calculating
         private void CalculateAvailibleMoves(Piece piece)
         {
-            availibleMovesMap[piece].Clear();
+            AvailibleMovesMap[piece].Clear();
 
             switch (piece.Type)
             {
@@ -55,12 +63,12 @@ namespace Chess.Logic
                 case King: AddKingMoves(piece); break;
             }
 
-            var king = piecesMap.Values
+            var king = PiecesMap.Values
                 .First(x => x.Type == King && x.Color == piece.Color);
 
             var kingPos = king.Position;
 
-            foreach (var enemyPiece in piecesMap.Values.Where(x => x.Color != piece.Color))
+            foreach (var enemyPiece in PiecesMap.Values.Where(x => x.Color != piece.Color))
             {
                 var type = enemyPiece.Type;
                 var pos = enemyPiece.Position;
@@ -73,7 +81,7 @@ namespace Chess.Logic
 
                 while ((pos += deltaPos) != kingPos)
                 {
-                    if (piecesMap.TryGetValue(pos, out var p))
+                    if (PiecesMap.TryGetValue(pos, out var p))
                     {
                         if (p.Color == enemyPiece.Color || coverPiece != null)
                         {
@@ -89,15 +97,15 @@ namespace Chess.Logic
 
                 if (coverPiece != null)
                 {
-                    availibleMovesMap[coverPiece]
+                    AvailibleMovesMap[coverPiece]
                         .Where(x => !x.IsSameLine(pos))
                         .ToList()
-                        .Foreach(x => availibleMovesMap[coverPiece].Remove(x));
+                        .Foreach(x => AvailibleMovesMap[coverPiece].Remove(x));
                 }
 
                 if (pos == kingPos)
                 {
-                    foreach (var p in availibleMovesMap
+                    foreach (var p in AvailibleMovesMap
                         .Where(x => x.Key.Color == piece.Color && x.Key.Type != King))
                     {
                         p.Value.Where(x => !x.IsBetween(kingPos, pos))
@@ -115,7 +123,7 @@ namespace Chess.Logic
             var twoStepsUp = oneStepUp * 2;
             var rightAttack = piece.Color == White ? 9 : 7;
 
-            var moves = availibleMovesMap[piece];
+            var moves = AvailibleMovesMap[piece];
             var pos = piece.Position;
             var leftAttack = piece.Color == White ? -7 : -9;
 
@@ -133,6 +141,9 @@ namespace Chess.Logic
                     moves.Add(pos + delta);
                 else
                 {
+                    if (this.moves.Count == 0)
+                        continue;
+
                     var lastMove = this.moves.Last();
 
                     if (pos.ToTuple().y == 4
@@ -163,7 +174,7 @@ namespace Chess.Logic
                 var pos = piece.Position + deltaPos;
 
                 if (CanMove(pos) || CanBeat(pos, piece.Color))
-                    availibleMovesMap[piece].Add(pos);
+                    AvailibleMovesMap[piece].Add(pos);
             }
         }
 
@@ -188,7 +199,7 @@ namespace Chess.Logic
             foreach (var delta in deltas)
             {
                 if (CanMove(pos + delta) || CanBeat(pos + delta, piece.Color))
-                    availibleMovesMap[piece].Add(pos + delta);
+                    AvailibleMovesMap[piece].Add(pos + delta);
             }
         }
 
@@ -201,12 +212,12 @@ namespace Chess.Logic
                 pos += deltaPos;
                 if (CanMove(pos))
                 {
-                    availibleMovesMap[piece].Add(pos);
+                    AvailibleMovesMap[piece].Add(pos);
                 }
                 else
                 {
                     if (CanBeat(pos, piece.Color))
-                        availibleMovesMap[piece].Add(pos);
+                        AvailibleMovesMap[piece].Add(pos);
 
                     return;
                 }
@@ -215,12 +226,12 @@ namespace Chess.Logic
 
         private bool CanMove(PositionEnum targetPos)
         {
-            return targetPos.IsValid() && piecesMap.ContainsKey(targetPos);
+            return targetPos.IsValid() && !PiecesMap.ContainsKey(targetPos);
         }
 
         private bool CanBeat(PositionEnum targetPos, PieceColor color)
         {
-            return piecesMap.TryGetValue(targetPos, out var piece) && piece.Color != color;
+            return PiecesMap.TryGetValue(targetPos, out var piece) && piece.Color != color;
         }
         #endregion
 
@@ -254,16 +265,16 @@ namespace Chess.Logic
             AddPiece(King, White, e1);
             AddPiece(King, Black, e8);
 
-            foreach (var piece in piecesMap.Values)
+            foreach (var piece in PiecesMap.Values)
             {
-                availibleMovesMap[piece] = new List<PositionEnum>();
+                AvailibleMovesMap[piece] = new List<PositionEnum>();
             }
         }
 
         private void AddPiece(PieceType type, PieceColor color, PositionEnum position)
         {
-            var piece = new Piece(type, color, position, piecesMap.Count);
-            piecesMap[piece.Position] = piece;
+            var piece = new Piece(type, color, position, PiecesMap.Count);
+            PiecesMap[piece.Position] = piece;
         }
         #endregion
     }

@@ -1,0 +1,49 @@
+﻿@using Chess.Logic
+
+<link href="~/css/App.css" rel="Stylesheet" type="text/css" />
+
+<div class="board">
+    @{
+        var piecesMap = (Dictionary<PositionEnum, Piece>)ViewBag.Pieces;
+        var availibleMoves = (List<PositionEnum>)ViewBag.AvailibleMoves;
+
+        for (int y = 7; y >= 0; y--)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                var i = (PositionEnum)(x * 8 + y);
+                var isWhite = (x + y) % 2 == 1;
+                var str = isWhite ? "white" : "black";
+
+                <div id="@i" class="cell @str">
+                    @{
+                        if (piecesMap.TryGetValue(i, out var piece))
+                        {
+                            var path = $"{piece.Color}-{piece.Type}.png".ToLower();
+
+                            <a href=@($"https://localhost:7113/MyHome/Moves?id={(int)i}")>
+                                <button>
+                                    <img class="img" src="~/assets/@path">
+                                </button>
+                            </a>
+                            
+
+                            //<a href="@Url.Action("Index","Home")" method="post">
+                            //</a>
+                        }
+                        if (availibleMoves != null && availibleMoves.Contains(i))
+                        {
+                            <div class="available"></div>
+                        }
+                    }
+                </div>
+            }
+        }
+    }
+</div>
+
+<script>
+    function ShowAvailibleMoves() {
+        location.href = "/Home/Index";
+    }
+</script>

@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chess.Logic", "Chess.Logic\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chess.Server", "Chess.Server\Chess.Server.csproj", "{71EB2226-5037-4BC5-85AA-CAE9C190E69D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chess.DataAccess", "Chess.DataAccess\Chess.DataAccess.csproj", "{6456801F-5231-4A4E-BD80-F6045DA1054B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chess.DataAccess", "Chess.DataAccess\Chess.DataAccess.csproj", "{6456801F-5231-4A4E-BD80-F6045DA1054B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chess.Models", "Chess.Models\Chess.Models.csproj", "{95074501-4D9B-4415-B08F-BE24257311A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chess.Models", "Chess.Models\Chess.Models.csproj", "{95074501-4D9B-4415-B08F-BE24257311A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

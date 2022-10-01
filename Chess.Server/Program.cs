@@ -20,6 +20,16 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapDefaultControllerRoute();
+
+    endpoints.MapGet("/", context =>
+    {
+        return Task.Run(() => context.Response.Redirect("/MyHome/Index"));
+    });
+});
+
 app.UseAuthorization();
 
 app.MapRazorPages();
