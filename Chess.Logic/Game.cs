@@ -10,12 +10,13 @@ using static Chess.Logic.Positions;
 using System.Runtime.InteropServices;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+using Chess.Logic.Moves;
 
 namespace Chess.Logic
 {
     public class Game
     {
-        private readonly List<Move> moves;
+        private readonly List<OldMove> moves;
 
         public Dictionary<Piece, List<Vector2>> AvailibleMovesMap { get; }
         public Dictionary<Vector2, Piece> PiecesMap { get; }
@@ -25,7 +26,8 @@ namespace Chess.Logic
             PiecesMap = new();
             AvailibleMovesMap = new();
 
-            moves = new List<Move>();
+            moves = new List<OldMove>();
+            isCellUnderAttackMap = new Dictionary<Vector2, bool>();
 
             GeneratePieces();
 
@@ -34,12 +36,12 @@ namespace Chess.Logic
                 AvailibleMovesMap[piece] = new List<Vector2>();
             }
 
-            CalculateAvailibleMoves(PieceColor.White);
+            CalculateAvailibleMoves(White);
         }
 
         public void MakeMove(Piece piece, Vector2 targetPos, object parameter = null)
         {
-            var move = new Move(moves.Count, piece, piece.Position, targetPos);
+            var move = new OldMove(moves.Count, piece, piece.Position, targetPos);
             moves.Add(move);
 
             PiecesMap.Remove(targetPos);
@@ -80,17 +82,20 @@ namespace Chess.Logic
             foreach (var enemyPiece in PiecesMap.Values.Where(x => x.Color != color))
             {
                 var type = enemyPiece.Type;
-                var pos = enemyPiece.Position;
-                var deltaPos = kingPos - pos;
+                var enemyPos = enemyPiece.Position;
+                var deltaPos = kingPos - enemyPos;
 
-                if (type != Bishop || type != Rook || type != Queen || !pos.IsSameLine(kingPos)) 
+                if ((type != Bishop && type != Rook && type != Queen) || !enemyPos.IsSameLine(kingPos))
                     continue;
 
                 Piece coverPiece = null;
 
-                while ((pos += deltaPos) != kingPos)
+                deltaPos = deltaPos.ToUnitDirection();
+
+                var step = enemyPos;
+                while ((step += deltaPos) != kingPos)
                 {
-                    if (PiecesMap.TryGetValue(pos, out var p))
+                    if (PiecesMap.TryGetValue(step, out var p))
                     {
                         if (p.Color == enemyPiece.Color || coverPiece != null)
                         {
@@ -107,20 +112,26 @@ namespace Chess.Logic
                 if (coverPiece != null)
                 {
                     AvailibleMovesMap[coverPiece]
-                        .Where(x => !x.IsSameLine(pos))
+                        .Where(x => !x.IsBetween(kingPos, enemyPos))
                         .ToList()
                         .Foreach(x => AvailibleMovesMap[coverPiece].Remove(x));
                 }
-
-                if (pos == kingPos)
+                else
+                if (step == kingPos)
                 {
                     foreach (var p in AvailibleMovesMap
-                        .Where(x => x.Key.Color == color && x.Key.Type != King))
+                        .Where(x => x.Key.Color == color && x.Key.Type != King)
+                        .Select(x => x.Value))
                     {
-                        p.Value.Where(x => !x.IsBetween(kingPos, pos))
+                        p.Where(x => !x.IsBetween(kingPos, enemyPos))
                             .ToList()
-                            .Foreach(x => p.Value.Remove(x));
+                            .Foreach(x => p.Remove(x));
                     }
+
+                    AvailibleMovesMap[king]
+                        .Where(x => x.IsBetween(kingPos, enemyPos))
+                        .ToList()
+                        .Foreach(x => AvailibleMovesMap[king].Remove(x));
                 }
             }
         }

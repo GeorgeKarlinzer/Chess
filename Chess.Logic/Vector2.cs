@@ -13,16 +13,22 @@ namespace Chess.Logic
             Y = y;
         }
 
+        public Vector2 ToUnitDirection()
+        {
+            var a = Math.Max(Math.Abs(X), Math.Abs(Y));
+            return this / a;
+        }
+
         public bool IsSameLine(Vector2 v) =>
-            X == v.X || Y == v.Y || X - v.X - Y + v.Y == 0;
+            X == v.X || Y == v.Y || Math.Abs(X - v.X) == Math.Abs(Y - v.Y);
 
         public bool IsBetween(Vector2 v1, Vector2 v2)
         {
-            if (!v1.IsSameLine(v2) || !IsSameLine(v2))
+            if (!IsSameLine(v1) || !IsSameLine(v2) || !v1.IsSameLine(v2))
                 return false;
 
-            var a = new Vector2(Math.Sign(v1.X - X), Math.Sign(v1.Y - Y));
-            var b = new Vector2(Math.Sign(v2.X - X), Math.Sign(v2.X - Y));
+            var a = (v1 - this).ToUnitDirection();
+            var b = (this - v2).ToUnitDirection();
 
             return a == b;
         }
@@ -35,8 +41,12 @@ namespace Chess.Logic
 
         public static Vector2 operator -(Vector2 a, Vector2 b) =>
             new(a.X - b.X, a.Y - b.Y);
+
         public static Vector2 operator *(Vector2 a, int b) =>
             new(a.X * b, a.Y * b);
+
+        public static Vector2 operator /(Vector2 a, int b) =>
+            new(a.X / b, a.Y / b);
 
         public override bool Equals([NotNullWhen(true)] object obj)
         {
