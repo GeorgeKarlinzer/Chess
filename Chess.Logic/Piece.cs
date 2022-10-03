@@ -5,10 +5,9 @@
         public int Id { get; }
         public PieceType Type { get; }
         public PieceColor Color { get; }
-        public PositionEnum Position { get; }
+        public Vector2 Position { get; set; }
 
-
-        public Piece(PieceType type, PieceColor color, PositionEnum position, int id)
+        public Piece(PieceType type, PieceColor color, Vector2 position, int id)
         {
             Type = type;
             Color = color;
@@ -17,6 +16,6 @@
         }
 
         public override string ToString() =>
-            $"{Type} ({Color}): {Position}";
+            $"{Type} ({Color}): {Position.ToChessCoord()}";
     }
 }

@@ -4,36 +4,37 @@
 
 <div class="board">
     @{
-        var piecesMap = (Dictionary<PositionEnum, Piece>)ViewBag.Pieces;
-        var availibleMoves = (List<PositionEnum>)ViewBag.AvailibleMoves;
+        var piecesMap = (Dictionary<Vector2, Piece>)ViewBag.Pieces;
+        var availibleMoves = (List<Vector2>)ViewBag.AvailibleMoves;
 
         for (int y = 7; y >= 0; y--)
         {
             for (int x = 0; x < 8; x++)
             {
-                var i = (PositionEnum)(x * 8 + y);
+                var i = new Vector2(x, y);
                 var isWhite = (x + y) % 2 == 1;
                 var str = isWhite ? "white" : "black";
 
-                <div id="@i" class="cell @str">
+                <div id="@(x * 8 + y)" class="cell @str">
                     @{
                         if (piecesMap.TryGetValue(i, out var piece))
                         {
                             var path = $"{piece.Color}-{piece.Type}.png".ToLower();
 
-                            <a href=@($"https://localhost:7113/MyHome/Moves?id={(int)i}")>
+                            <a href=@($"https://localhost:7113/MyHome/Moves?id={piece.Id}")>
                                 <button>
                                     <img class="img" src="~/assets/@path">
                                 </button>
                             </a>
-                            
+
 
                             //<a href="@Url.Action("Index","Home")" method="post">
                             //</a>
                         }
                         if (availibleMoves != null && availibleMoves.Contains(i))
                         {
-                            <div class="available"></div>
+                            <button class="available" onclick="location.href='@($"https://localhost:7113/MyHome/Move?cell={x * 8 + y}")'" type="button">
+                            </button>
                         }
                     }
                 </div>

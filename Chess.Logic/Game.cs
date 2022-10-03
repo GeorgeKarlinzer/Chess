@@ -6,20 +6,21 @@ using System.Text;
 using System.Threading.Tasks;
 using static Chess.Logic.PieceType;
 using static Chess.Logic.PieceColor;
-using static Chess.Logic.PositionEnum;
+using static Chess.Logic.Positions;
 using System.Runtime.InteropServices;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace Chess.Logic
 {
-    public class Match
+    public class Game
     {
         private readonly List<Move> moves;
 
-        public Dictionary<Piece, List<PositionEnum>> AvailibleMovesMap { get; }
-        public Dictionary<PositionEnum, Piece> PiecesMap { get; }
+        public Dictionary<Piece, List<Vector2>> AvailibleMovesMap { get; }
+        public Dictionary<Vector2, Piece> PiecesMap { get; }
 
-        public Match()
+        public Game()
         {
             PiecesMap = new();
             AvailibleMovesMap = new();
@@ -30,45 +31,53 @@ namespace Chess.Logic
 
             foreach (var piece in PiecesMap.Values)
             {
-                AvailibleMovesMap[piece] = new List<PositionEnum>();
+                AvailibleMovesMap[piece] = new List<Vector2>();
             }
 
-            AvailibleMovesMap.Where(x => x.Key.Color == White)
-                .Foreach(x => CalculateAvailibleMoves(x.Key));
+            CalculateAvailibleMoves(PieceColor.White);
         }
 
-        public void MakeMove(Piece piece, int availibleMoveId, object parameter)
+        public void MakeMove(Piece piece, Vector2 targetPos, object parameter = null)
         {
-            var targetPos = AvailibleMovesMap[piece][availibleMoveId];
-
             var move = new Move(moves.Count, piece, piece.Position, targetPos);
             moves.Add(move);
 
-            AvailibleMovesMap.Where(x => x.Key.Color != piece.Color)
-                .Foreach(x => CalculateAvailibleMoves(x.Key));
+            PiecesMap.Remove(targetPos);
+            PiecesMap.Remove(move.SourcePos);
+
+            PiecesMap[targetPos] = piece;
+            piece.Position = move.TargetPos;
+
+            CalculateAvailibleMoves(piece.Color == White ? Black : White);
         }
 
         #region Moves calculating
-        private void CalculateAvailibleMoves(Piece piece)
-        {
-            AvailibleMovesMap[piece].Clear();
 
-            switch (piece.Type)
+        private void CalculateAvailibleMoves(PieceColor color)
+        {
+            foreach (var piece in AvailibleMovesMap.Keys)
             {
-                case Pawn: AddPawnMoves(piece); break;
-                case Bishop: AddBishopMoves(piece); break;
-                case Knight: AddKnightMoves(piece); break;
-                case Rook: AddRookMoves(piece); break;
-                case Queen: AddQueenMoves(piece); break;
-                case King: AddKingMoves(piece); break;
+                AvailibleMovesMap[piece].Clear();
+                if (piece.Color != color)
+                    continue;
+
+                switch (piece.Type)
+                {
+                    case Pawn: AddPawnMoves(piece); break;
+                    case Bishop: AddBishopMoves(piece); break;
+                    case Knight: AddKnightMoves(piece); break;
+                    case Rook: AddRookMoves(piece); break;
+                    case Queen: AddQueenMoves(piece); break;
+                    case King: AddKingMoves(piece); break;
+                }
             }
 
             var king = PiecesMap.Values
-                .First(x => x.Type == King && x.Color == piece.Color);
+                .First(x => x.Type == King && x.Color == color);
 
             var kingPos = king.Position;
 
-            foreach (var enemyPiece in PiecesMap.Values.Where(x => x.Color != piece.Color))
+            foreach (var enemyPiece in PiecesMap.Values.Where(x => x.Color != color))
             {
                 var type = enemyPiece.Type;
                 var pos = enemyPiece.Position;
@@ -106,7 +115,7 @@ namespace Chess.Logic
                 if (pos == kingPos)
                 {
                     foreach (var p in AvailibleMovesMap
-                        .Where(x => x.Key.Color == piece.Color && x.Key.Type != King))
+                        .Where(x => x.Key.Color == color && x.Key.Type != King))
                     {
                         p.Value.Where(x => !x.IsBetween(kingPos, pos))
                             .ToList()
@@ -119,18 +128,18 @@ namespace Chess.Logic
         private void AddPawnMoves(Piece piece)
         {
             var startPosY = piece.Color == White ? 1 : 6;
-            var oneStepUp = piece.Color == White ? 1 : -1;
+            var oneStepUp = piece.Color == White ? new Vector2(0, 1) : new Vector2(0, -1);
             var twoStepsUp = oneStepUp * 2;
-            var rightAttack = piece.Color == White ? 9 : 7;
+            var rightAttack = piece.Color == White ? new Vector2(1, 1) : new Vector2(1, -1);
+            var leftAttack = piece.Color == White ? new Vector2(-1, 1) : new Vector2(-1, -1);
 
             var moves = AvailibleMovesMap[piece];
             var pos = piece.Position;
-            var leftAttack = piece.Color == White ? -7 : -9;
 
             if (CanMove(pos + oneStepUp))
                 moves.Add(pos + oneStepUp);
 
-            if (pos.ToTuple().y == startPosY && CanMove(pos + twoStepsUp))
+            if (pos.Y == startPosY && CanMove(pos + twoStepsUp))
                 moves.Add(pos + twoStepsUp);
 
             var deltas = new[] { rightAttack, leftAttack };
@@ -146,10 +155,10 @@ namespace Chess.Logic
 
                     var lastMove = this.moves.Last();
 
-                    if (pos.ToTuple().y == 4
+                    if (pos.Y == 4
                         && lastMove.Piece.Type == Pawn
-                        && (Math.Abs(lastMove.TargetPos.GetX() - piece.Position.GetX()) == 1)
-                        && lastMove.SourcePos - lastMove.TargetPos == 2)
+                        && (Math.Abs(lastMove.TargetPos.X - piece.Position.X) == 1)
+                        && lastMove.SourcePos.Y - lastMove.TargetPos.Y == 2)
                     {
                         moves.Add(pos + delta);
                     }
@@ -159,15 +168,19 @@ namespace Chess.Logic
 
         private void AddBishopMoves(Piece piece)
         {
-            AddContinuousMove(piece, 9);
-            AddContinuousMove(piece, -9);
-            AddContinuousMove(piece, 7);
-            AddContinuousMove(piece, -7);
+            AddContinuousMove(piece, new(1, 1));
+            AddContinuousMove(piece, new(-1, -1));
+            AddContinuousMove(piece, new(1, -1));
+            AddContinuousMove(piece, new(-1, 1));
         }
 
         private void AddKnightMoves(Piece piece)
         {
-            var deltaPositions = new[] { 10, 17, 15, 6, -10, -17, -15, -6 };
+            Vector2[] deltaPositions = new Vector2[]
+            {
+                new(1, 2), new(-1, 2), new(2, 1), new(-2, 1),
+                new(1, -2), new(-1, -2), new(2, -1), new(-2, -1)
+            };
 
             foreach (var deltaPos in deltaPositions)
             {
@@ -180,10 +193,10 @@ namespace Chess.Logic
 
         private void AddRookMoves(Piece piece)
         {
-            AddContinuousMove(piece, 1);
-            AddContinuousMove(piece, -1);
-            AddContinuousMove(piece, 8);
-            AddContinuousMove(piece, -8);
+            AddContinuousMove(piece, new(1, 0));
+            AddContinuousMove(piece, new(-1, 0));
+            AddContinuousMove(piece, new(0, 1));
+            AddContinuousMove(piece, new(0, -1));
         }
 
         private void AddQueenMoves(Piece piece)
@@ -195,41 +208,45 @@ namespace Chess.Logic
         private void AddKingMoves(Piece piece)
         {
             var pos = piece.Position;
-            var deltas = new[] { 1, 9, 8, 7, -1, -9, -8, -7 };
-            foreach (var delta in deltas)
+            Vector2[] deltaPositions = new Vector2[]
+            {
+                new(1, 0), new(0, 1), new(1, -1), new(1, 1),
+                new(-1, 0), new(-1, 0), new(-1, 1), new(-1, -1)
+            };
+            foreach (var delta in deltaPositions)
             {
                 if (CanMove(pos + delta) || CanBeat(pos + delta, piece.Color))
                     AvailibleMovesMap[piece].Add(pos + delta);
             }
         }
 
-        private void AddContinuousMove(Piece piece, int deltaPos)
+        private void AddContinuousMove(Piece piece, Vector2 deltaPos)
         {
-            var pos = piece.Position;
+            var targetPos = piece.Position;
 
             while (true)
             {
-                pos += deltaPos;
-                if (CanMove(pos))
+                targetPos += deltaPos;
+                if (CanMove(targetPos))
                 {
-                    AvailibleMovesMap[piece].Add(pos);
+                    AvailibleMovesMap[piece].Add(targetPos);
                 }
                 else
                 {
-                    if (CanBeat(pos, piece.Color))
-                        AvailibleMovesMap[piece].Add(pos);
+                    if (CanBeat(targetPos, piece.Color))
+                        AvailibleMovesMap[piece].Add(targetPos);
 
                     return;
                 }
             }
         }
 
-        private bool CanMove(PositionEnum targetPos)
+        private bool CanMove(Vector2 targetPos)
         {
-            return targetPos.IsValid() && !PiecesMap.ContainsKey(targetPos);
+            return targetPos.IsValidChessPos() && !PiecesMap.ContainsKey(targetPos);
         }
 
-        private bool CanBeat(PositionEnum targetPos, PieceColor color)
+        private bool CanBeat(Vector2 targetPos, PieceColor color)
         {
             return PiecesMap.TryGetValue(targetPos, out var piece) && piece.Color != color;
         }
@@ -238,40 +255,37 @@ namespace Chess.Logic
         #region Generating
         private void GeneratePieces()
         {
-            for (var pos = a2; pos < h8; pos += 8)
+            var pawnPos = new[] { A2, B2, C2, D2, E2, F2, G2, H2 };
+
+            foreach (var pos in pawnPos)
             {
                 AddPiece(Pawn, White, pos);
-                AddPiece(Pawn, Black, pos + 5);
+                AddPiece(Pawn, Black, new(pos.X, pos.Y + 5));
             }
 
-            AddPiece(Rook, White, a1);
-            AddPiece(Rook, White, h1);
-            AddPiece(Rook, Black, a8);
-            AddPiece(Rook, Black, h8);
+            AddPiece(Rook, White, A1);
+            AddPiece(Rook, White, H1);
+            AddPiece(Rook, Black, A8);
+            AddPiece(Rook, Black, H8);
 
-            AddPiece(Knight, White, b1);
-            AddPiece(Knight, White, g1);
-            AddPiece(Knight, Black, b8);
-            AddPiece(Knight, Black, g8);
+            AddPiece(Knight, White, B1);
+            AddPiece(Knight, White, G1);
+            AddPiece(Knight, Black, B8);
+            AddPiece(Knight, Black, G8);
 
-            AddPiece(Bishop, White, c1);
-            AddPiece(Knight, White, f1);
-            AddPiece(Knight, Black, c8);
-            AddPiece(Knight, Black, f8);
+            AddPiece(Bishop, White, C1);
+            AddPiece(Bishop, White, F1);
+            AddPiece(Bishop, Black, C8);
+            AddPiece(Bishop, Black, F8);
 
-            AddPiece(Queen, White, d1);
-            AddPiece(Queen, Black, d8);
+            AddPiece(Queen, White, D1);
+            AddPiece(Queen, Black, D8);
 
-            AddPiece(King, White, e1);
-            AddPiece(King, Black, e8);
-
-            foreach (var piece in PiecesMap.Values)
-            {
-                AvailibleMovesMap[piece] = new List<PositionEnum>();
-            }
+            AddPiece(King, White, E1);
+            AddPiece(King, Black, E8);
         }
 
-        private void AddPiece(PieceType type, PieceColor color, PositionEnum position)
+        private void AddPiece(PieceType type, PieceColor color, Vector2 position)
         {
             var piece = new Piece(type, color, position, PiecesMap.Count);
             PiecesMap[piece.Position] = piece;

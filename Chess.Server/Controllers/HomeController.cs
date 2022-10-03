@@ -5,36 +5,38 @@ namespace Chess.Server.Controllers
 {
     public class MyHomeController : Controller
     {
-        private static Match match;
+        private static Game game = new Game();
         private static Piece selectedPiece;
 
         public MyHomeController()
         {
-            match = new Match();
         }
 
         public IActionResult Index()
         {
-            ViewBag.Pieces = match.PiecesMap;
+            ViewBag.Pieces = game.PiecesMap;
+
             if (selectedPiece != null)
-                ViewBag.AvailibleMoves = match.AvailibleMovesMap
-                    .First(x => x.Key.Id == selectedPiece.Id).Value;
+            {
+                ViewBag.AvailibleMoves = game.AvailibleMovesMap[selectedPiece];
+            }    
+
             return View();
         }
 
-        //[HttpGet("id")]
         public IActionResult Moves()
         {
-            var pos = (PositionEnum)int.Parse(Request.Query["id"]);
-            selectedPiece = match.PiecesMap.Values.First(x => x.Position == pos);
+            var id = int.Parse(Request.Query["id"]);
+            selectedPiece = game.PiecesMap.Values.First(x => x.Id == id);
             return RedirectToAction(nameof(Index));
         }
-        //[HttpPost]
-        //public async Task<IActionResult> Index(int aa)
-        //{
-        //    var id = Request.Form["id"];
-        //    selectedPiece = match.PiecesMap.Values.First(x => x.Id == id);
-        //    return RedirectToAction(nameof(Index));
-        //}
+
+        public IActionResult Move()
+        {
+            var pos = int.Parse(Request.Query["cell"]).ToChessPos();
+            game.MakeMove(selectedPiece, pos);
+            
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
