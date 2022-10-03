@@ -83,7 +83,7 @@ namespace Chess.Logic
                 var pos = enemyPiece.Position;
                 var deltaPos = kingPos - pos;
 
-                if (type != Bishop || type != Rook || type != Queen || !pos.IsSameLine(kingPos))
+                if (type != Bishop || type != Rook || type != Queen || !pos.IsSameLine(kingPos)) 
                     continue;
 
                 Piece coverPiece = null;
