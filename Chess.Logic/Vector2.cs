@@ -16,6 +16,8 @@ namespace Chess.Logic
         public Vector2 ToUnitDirection()
         {
             var a = Math.Max(Math.Abs(X), Math.Abs(Y));
+            if (a == 0)
+                return new(0, 0);
             return this / a;
         }
 

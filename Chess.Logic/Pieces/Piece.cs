@@ -13,6 +13,7 @@ namespace Chess.Logic.Pieces
 
         public List<Move> PossibleMoves { get; }
         public List<Vector2> PossibleAttacks { get; }
+        public List<Vector2> KingAttacks { get; }
 
         public Piece(PieceColor color, Vector2 position, int id, Game game)
         {
@@ -23,9 +24,15 @@ namespace Chess.Logic.Pieces
 
             PossibleMoves = new List<Move>();
             PossibleAttacks = new List<Vector2>();
+            KingAttacks = new List<Vector2>();
         }
 
-        public abstract void CalculateMoves();
+        public virtual void CalculateMoves()
+        {
+            PossibleMoves.Clear();
+            PossibleAttacks.Clear();
+            KingAttacks.Clear();
+        }
 
         protected void AddContinuousMove(Vector2 deltaPos)
         {
@@ -33,7 +40,7 @@ namespace Chess.Logic.Pieces
 
             while ((targetPos += deltaPos).IsValidChessPos())
             {
-                PossibleAttacks.Add(deltaPos);
+                PossibleAttacks.Add(targetPos);
 
                 if (game.CanMove(targetPos))
                 {
@@ -42,7 +49,17 @@ namespace Chess.Logic.Pieces
                 else
                 {
                     if (game.CanBeat(targetPos, Color, out var attackedPiece))
+                    {
                         PossibleMoves.Add(CreateMove(targetPos, attackedPiece));
+                        if (attackedPiece.GetType() == typeof(King))
+                        {
+                            var temp = Position - deltaPos;
+                            while ((temp += deltaPos).IsValidChessPos())
+                            {
+                                KingAttacks.Add(temp);
+                            }
+                        }
+                    }
 
                     return;
                 }
@@ -61,8 +78,7 @@ namespace Chess.Logic.Pieces
 
         public override void CalculateMoves()
         {
-            PossibleMoves.Clear();
-            PossibleAttacks.Clear();
+            base.CalculateMoves();
 
             var startPosY = Color == White ? 1 : 6;
             var enPassantY = Color == White ? 4 : 3;
@@ -87,13 +103,20 @@ namespace Chess.Logic.Pieces
 
             foreach (var delta in deltas)
             {
-                if(delta.IsValidChessPos())
-                    PossibleAttacks.Add(Position + delta);
+                if (!(Position + delta).IsValidChessPos())
+                    continue;
+
+                PossibleAttacks.Add(Position + delta);
 
                 if (game.CanBeat(Position + delta, Color, out var attackedPiece))
                 {
                     var move = new Move(this, attackedPiece, Position + delta, game);
                     PossibleMoves.Add(move);
+                    if (attackedPiece.GetType() == typeof(King))
+                    {
+                        KingAttacks.Add(Position);
+                        KingAttacks.Add(Position + delta);
+                    }
                 }
                 else
                 {
@@ -123,8 +146,7 @@ namespace Chess.Logic.Pieces
 
         public override void CalculateMoves()
         {
-            PossibleMoves.Clear();
-            PossibleAttacks.Clear();
+            base.CalculateMoves();
 
             AddContinuousMove(new(1, 1));
             AddContinuousMove(new(-1, -1));
@@ -141,8 +163,7 @@ namespace Chess.Logic.Pieces
 
         public override void CalculateMoves()
         {
-            PossibleMoves.Clear();
-            PossibleAttacks.Clear();
+            base.CalculateMoves();
 
             Vector2[] deltaPositions = new Vector2[]
             {
@@ -154,12 +175,20 @@ namespace Chess.Logic.Pieces
             {
                 var pos = Position + deltaPos;
 
-                if (pos.IsValidChessPos())
-                    PossibleAttacks.Add(pos);
+                if (!pos.IsValidChessPos())
+                    continue;
+
+                PossibleAttacks.Add(pos);
 
                 if (game.CanBeat(pos, Color, out var attackedPiece) || game.CanMove(pos))
                 {
                     PossibleMoves.Add(CreateMove(pos, attackedPiece));
+
+                    if (attackedPiece is not null && attackedPiece.GetType() == typeof(King))
+                    {
+                        KingAttacks.Add(Position);
+                        KingAttacks.Add(pos);
+                    }
                 }
             }
         }
@@ -173,8 +202,7 @@ namespace Chess.Logic.Pieces
 
         public override void CalculateMoves()
         {
-            PossibleMoves.Clear();
-            PossibleAttacks.Clear();
+            base.CalculateMoves();
 
             AddContinuousMove(new(1, 0));
             AddContinuousMove(new(-1, 0));
@@ -191,8 +219,7 @@ namespace Chess.Logic.Pieces
 
         public override void CalculateMoves()
         {
-            PossibleMoves.Clear();
-            PossibleAttacks.Clear();
+            base.CalculateMoves();
 
             AddContinuousMove(new(1, 0));
             AddContinuousMove(new(-1, 0));
@@ -213,8 +240,7 @@ namespace Chess.Logic.Pieces
 
         public override void CalculateMoves()
         {
-            PossibleMoves.Clear();
-            PossibleAttacks.Clear();
+            base.CalculateMoves();
 
             Vector2[] deltaPositions = new Vector2[]
             {

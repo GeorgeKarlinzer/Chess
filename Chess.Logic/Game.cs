@@ -90,15 +90,32 @@ namespace Chess.Logic
                 }
             }
 
-            // для каждой фигуры которая может атаковать короля убираем все ходы наших фигур которые не препятствут шаху. Можно добвавить в фигуры функцию SaveFromCheck()
+            var attackedPieces = PiecesMap.Values
+                .Where(x => x.Color != color && x.KingAttacks.Count != 0)
+                .ToList();
 
-            var isCheck = PiecesMap.Values.Where(x => x.Color != color)
+            var attackedCells = PiecesMap.Values
+                .Where(x => x.Color != color)
                 .SelectMany(x => x.PossibleAttacks)
-                .Contains(kingPos);
+                .Union(attackedPieces.SelectMany(x => x.KingAttacks))
+                .Distinct()
+                .ToList();
 
-            PiecesMap.Values.Where(x => x.Color == color)
-                .Foreach(x => x.PossibleMoves
-                    .Where(y => !y.TargetPos.IsBetween(kingPos))
+            var aaa = king.PossibleMoves.Where(x => attackedCells.Contains(x.TargetPos))
+                .ToList();
+            aaa.Foreach(x => king.PossibleMoves.Remove(x));
+
+            if(attackedPieces.Count == 1)
+            {
+                var attackedPiece = attackedPieces.First();
+
+                foreach (var piece in PiecesMap.Values.Where(x => x.Color == color && x != king))
+                {
+                    piece.PossibleMoves.Where(x => !attackedPiece.KingAttacks.Contains(x.TargetPos))
+                        .ToList()
+                        .Foreach(x => piece.PossibleMoves.Remove(x));
+                }
+            }
         }
 
         internal bool CanMove(Vector2 targetPos)
