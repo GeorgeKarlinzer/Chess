@@ -1,11 +1,13 @@
 ﻿@using Chess.Logic
+@using Chess.Logic.Moves
+@using Chess.Logic.Pieces
 
 <link href="~/css/App.css" rel="Stylesheet" type="text/css" />
 
 <div class="board">
     @{
         var piecesMap = (Dictionary<Vector2, Piece>)ViewBag.Pieces;
-        var availibleMoves = (List<Vector2>)ViewBag.AvailibleMoves;
+        var availibleMoves = (List<Move>)ViewBag.AvailibleMoves;
 
         for (int y = 7; y >= 0; y--)
         {
@@ -19,7 +21,7 @@
                     @{
                         if (piecesMap.TryGetValue(i, out var piece))
                         {
-                            var path = $"{piece.Color}-{piece.Type}.png".ToLower();
+                            var path = $"{piece.Color}-{piece.GetType().Name}.png".ToLower();
 
                             <a href=@($"https://localhost:7113/MyHome/Moves?id={piece.Id}")>
                                 <button>
@@ -31,7 +33,7 @@
                             //<a href="@Url.Action("Index","Home")" method="post">
                             //</a>
                         }
-                        if (availibleMoves != null && availibleMoves.Contains(i))
+                        if (availibleMoves != null && availibleMoves.Any(x => x.TargetPos == i))
                         {
                             <button class="available" onclick="location.href='@($"https://localhost:7113/MyHome/Move?cell={x * 8 + y}")'" type="button">
                             </button>

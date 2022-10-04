@@ -1,5 +1,4 @@
-﻿using static Chess.Logic.PieceType;
-
+﻿
 namespace Chess.Logic
 {
     //internal class MovementSystem

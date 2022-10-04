@@ -1,4 +1,5 @@
 ﻿using Chess.Logic;
+using Chess.Logic.Pieces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chess.Server.Controllers
@@ -18,7 +19,7 @@ namespace Chess.Server.Controllers
 
             if (selectedPiece != null)
             {
-                ViewBag.AvailibleMoves = game.AvailibleMovesMap[selectedPiece];
+                ViewBag.AvailibleMoves = selectedPiece.PossibleMoves;
             }    
 
             return View();
