@@ -219,3 +219,9 @@ namespace Chess.Logic
         #endregion
     }
 }
+
+// TODO: Add React.js
+// TODO: Compose Server Side
+// TODO: Add Pawn end move
+// TODO: Add timer
+// TODO: Add multiplayer
