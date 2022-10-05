@@ -24,15 +24,7 @@ namespace Chess.Logic.Moves
 
         public virtual void MakeMove()
         {
-            Piece.Position = TargetPos;
-
-            game.PiecesMap.Remove(SourcePos);
-            if (AttackedPiece is not null)
-                game.PiecesMap.Remove(AttackedPiece.Position);
-
-            game.PiecesMap[TargetPos] = Piece;
-            game.Moves.Add(this);
-
+            game.MovePiece(Piece, TargetPos, AttackedPiece);
             game.CalculateAvailibleMoves(Piece.Color == White ? Black : White);
         }
     }
@@ -48,8 +40,9 @@ namespace Chess.Logic.Moves
 
         public override void MakeMove()
         {
-            base.MakeMove();
-
+            game.MovePiece(Piece, TargetPos, AttackedPiece);
+            game.MovePiece(rook, rook.Position + new Vector2(-2, 0));
+            game.CalculateAvailibleMoves(Piece.Color == White ? Black : White);
         }
     }
 
@@ -64,8 +57,9 @@ namespace Chess.Logic.Moves
 
         public override void MakeMove()
         {
-            base.MakeMove();
-
+            game.MovePiece(Piece, TargetPos, AttackedPiece);
+            game.MovePiece(rook, rook.Position + new Vector2(3, 0));
+            game.CalculateAvailibleMoves(Piece.Color == White ? Black : White);
         }
     }
 }

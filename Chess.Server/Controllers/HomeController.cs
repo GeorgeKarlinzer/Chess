@@ -35,7 +35,7 @@ namespace Chess.Server.Controllers
         public IActionResult Move()
         {
             var pos = int.Parse(Request.Query["cell"]).ToChessPos();
-            game.MakeMove(selectedPiece, pos);
+            Game.MakeMove(selectedPiece, pos);
             
             return RedirectToAction(nameof(Index));
         }

@@ -32,11 +32,23 @@ namespace Chess.Logic
             CalculateAvailibleMoves(White);
         }
 
-        public void MakeMove(Piece piece, Vector2 targetPos)
+        public static void MakeMove(Piece piece, Vector2 targetPos)
         {
             piece.PossibleMoves
                 .FirstOrDefault(x => x.TargetPos == targetPos)
                 ?.MakeMove();
+        }
+
+        public void MovePiece(Piece piece, Vector2 targetPos, Piece attackedPiece = null)
+        {
+            PiecesMap.Remove(piece.Position);
+
+            if (attackedPiece is not null)
+                PiecesMap.Remove(attackedPiece.Position);
+
+            PiecesMap[targetPos] = piece;
+            piece.Position = targetPos;
+            piece.IsMoved = true;
         }
 
         #region Moves calculating
@@ -90,22 +102,39 @@ namespace Chess.Logic
                 }
             }
 
-            var attackedPieces = PiecesMap.Values
-                .Where(x => x.Color != color && x.KingAttacks.Count != 0)
-                .ToList();
+            // для каждой фигуры которая может атаковать короля убираем все ходы наших фигур которые не препятствут шаху. Можно добвавить в фигуры функцию SaveFromCheck()
 
             var attackedCells = PiecesMap.Values
                 .Where(x => x.Color != color)
                 .SelectMany(x => x.PossibleAttacks)
-                .Union(attackedPieces.SelectMany(x => x.KingAttacks))
                 .Distinct()
                 .ToList();
 
-            var aaa = king.PossibleMoves.Where(x => attackedCells.Contains(x.TargetPos))
-                .ToList();
-            aaa.Foreach(x => king.PossibleMoves.Remove(x));
+            king.PossibleMoves.Where(x => attackedCells.Contains(x.TargetPos))
+                .ToList()
+                .Foreach(x => king.PossibleMoves.Remove(x));
 
-            if(attackedPieces.Count == 1)
+            var kingCastle = king.PossibleMoves.FirstOrDefault(x => x.GetType() == typeof(KingCastle));
+            var queenCastle = king.PossibleMoves.FirstOrDefault(x => x.GetType() == typeof(QueenCastle));
+
+            var breakKingCastlePoss = king.Color == White ? new[] { E1, F1 } : new[] { E8, F8 };
+            var breakQueenCastlePoss = king.Color == White ? new[] { E1, D1 } : new[] { E8, D8 };
+
+            if (kingCastle is not null && attackedCells.Any(x => breakKingCastlePoss.Contains(x)))
+            {
+                king.PossibleMoves.Remove(kingCastle);
+            }
+
+            if (queenCastle is not null && attackedCells.Any(x => breakQueenCastlePoss.Contains(x)))
+            {
+                king.PossibleMoves.Remove(queenCastle);
+            }
+
+            var attackedPieces = PiecesMap.Values
+                .Where(x => x.Color != color && x.KingAttacks.Count != 0)
+                .ToList();
+
+            if (attackedPieces.Count == 1)
             {
                 var attackedPiece = attackedPieces.First();
 
@@ -114,6 +143,23 @@ namespace Chess.Logic
                     piece.PossibleMoves.Where(x => !attackedPiece.KingAttacks.Contains(x.TargetPos))
                         .ToList()
                         .Foreach(x => piece.PossibleMoves.Remove(x));
+                }
+            }
+
+            var isCheckmateOrStalemate = !PiecesMap.Values.Where(x => x.Color == color)
+                .Any(x => x.PossibleMoves.Count > 0);
+
+            if (isCheckmateOrStalemate)
+            {
+                if (attackedPieces.Count > 0)
+                {
+                    PiecesMap.Where(x => x.Value.Color == color)
+                        .ToList()
+                        .Foreach(x => PiecesMap.Remove(x.Key));
+                }
+                else
+                {
+                    PiecesMap.Clear();
                 }
             }
         }
