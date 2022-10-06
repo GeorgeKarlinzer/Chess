@@ -19,6 +19,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,11 +30,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\src\components\CellComponent.tsx" />
+    <None Remove="ClientApp\src\components\Board.js" />
+    <None Remove="ClientApp\src\components\Piece.js" />
+    <None Remove="ClientApp\src\index.d.ts" />
+    <None Remove="ClientApp\src\Models\Piece.ts" />
+    <None Remove="ClientApp\src\Models\Vector2.ts" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Chess.Logic\Chess.Logic.csproj" />
+    <ProjectReference Include="..\Chess.Models\Chess.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ClientApp\src\assets\Boards\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\Board.js" />
+    <TypeScriptCompile Include="ClientApp\src\components\Piece.js" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

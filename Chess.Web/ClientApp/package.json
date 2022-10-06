@@ -15,6 +15,7 @@
     "react-scripts": "^5.0.1",
     "reactstrap": "^9.1.1",
     "rimraf": "^3.0.2",
+    "styled-components": "^5.3.6",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.5.3",
     "workbox-broadcast-update": "^6.5.3",
@@ -30,6 +31,7 @@
     "workbox-streams": "^6.5.3"
   },
   "devDependencies": {
+    "@types/react": "^18.0.21",
     "ajv": "^8.11.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.18.0",
