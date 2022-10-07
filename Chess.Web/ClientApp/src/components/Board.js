@@ -31,7 +31,6 @@ class Board extends Component {
             </section>
         )
     }
-                    //{<Piece x={p.x} y={p.y} img={iimg}></Piece>}
 
     render() {
         let contents = this.state.loading
