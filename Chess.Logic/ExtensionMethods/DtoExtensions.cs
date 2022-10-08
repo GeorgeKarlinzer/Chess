@@ -2,11 +2,11 @@
 using Chess.Logic.Pieces;
 using Chess.Models;
 
-namespace Chess.Logic.ExtensionMethods
+namespace Chess.Logic
 {
-    public static class DtoExtensions
+    internal static class DtoExtensions
     {
-        public static PieceDto ToDto(this Piece piece)
+        public static PieceDto ToDto(this Piece piece, PieceColor currentPlayer)
         {
             var dto = new PieceDto()
             {
@@ -14,9 +14,12 @@ namespace Chess.Logic.ExtensionMethods
                 Name = piece.GetType().Name,
                 Color = piece.Color.ToString(),
                 Position = piece.Position.ToDto(),
-                Moves = piece.PossibleMoves.Select(x =>
-                    new PositionDto() { X = x.TargetPos.X, Y = x.TargetPos.Y }).ToList()
+                Moves = new List<PositionDto>()
             };
+
+            if (piece.Color == currentPlayer)
+                dto.Moves = piece.PossibleMoves.Select(x =>
+                    new PositionDto() { X = x.TargetPos.X, Y = x.TargetPos.Y }).ToList();
 
             return dto;
         }

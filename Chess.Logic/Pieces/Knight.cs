@@ -2,7 +2,7 @@
 {
     internal class Knight : Piece
     {
-        public Knight(PieceColor color, Vector2 position, int id, Game game) : base(color, position, id, game)
+        public Knight(PieceColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
         {
         }
 
@@ -25,7 +25,7 @@
 
                 PossibleAttacks.Add(pos);
 
-                if (game.CanBeat(pos, Color, out var attackedPiece) || game.CanMove(pos))
+                if (board.CanBeat(pos, Color, out var attackedPiece) || board.CanMove(pos))
                 {
                     PossibleMoves.Add(CreateMove(pos, attackedPiece));
 

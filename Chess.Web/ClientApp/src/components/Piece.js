@@ -31,9 +31,9 @@ class Piece extends Component {
         return (
             <StyledSquare className={this.props.isSelected ? "selected" : ""}
                 id={this.props.id}
-                x={this.state.x}
-                y={this.state.y}
-                img={this.state.img}
+                x={this.props.x}
+                y={this.props.y}
+                img={this.props.img}
                 onClick={() => this.onClick()} >
             </StyledSquare>
         )

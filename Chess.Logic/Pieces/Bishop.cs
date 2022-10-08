@@ -2,7 +2,7 @@
 {
     internal class Bishop : Piece
     {
-        public Bishop(PieceColor color, Vector2 position, int id, Game game) : base(color, position, id, game)
+        public Bishop(PieceColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
         {
         }
 

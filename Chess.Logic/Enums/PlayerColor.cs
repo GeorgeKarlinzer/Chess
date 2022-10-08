@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chess.Logic
 {
-    public enum PieceColor
+    internal enum PieceColor
     {
         White,
         Black

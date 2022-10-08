@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chess.Logic
 {
-    public static class VectorExtensions
+    internal static class VectorExtensions
     {
         public static string ToChessCoord(this Vector2 point)
         {

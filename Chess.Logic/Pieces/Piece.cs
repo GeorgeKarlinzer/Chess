@@ -5,7 +5,7 @@ namespace Chess.Logic.Pieces
 {
     internal abstract class Piece
     {
-        protected Game game;
+        protected Board board;
 
         public int Id { get; }
         public PieceColor Color { get; }
@@ -16,12 +16,12 @@ namespace Chess.Logic.Pieces
         public List<Vector2> PossibleAttacks { get; }
         public List<Vector2> KingAttacks { get; }
 
-        public Piece(PieceColor color, Vector2 position, int id, Game game)
+        public Piece(PieceColor color, Vector2 position, int id, Board board)
         {
             Color = color;
             Position = position;
             Id = id;
-            this.game = game;
+            this.board = board;
 
             PossibleMoves = new List<Move>();
             PossibleAttacks = new List<Vector2>();
@@ -47,14 +47,14 @@ namespace Chess.Logic.Pieces
 
                 PossibleAttacks.Add(targetPos);
 
-                if (game.CanMove(targetPos))
+                if (board.CanMove(targetPos))
                 {
                     PossibleMoves.Add(CreateMove(targetPos));
                 }
                 else
                 {
                     flag = true;
-                    if (game.CanBeat(targetPos, Color, out var attackedPiece))
+                    if (board.CanBeat(targetPos, Color, out var attackedPiece))
                     {
                         PossibleMoves.Add(CreateMove(targetPos, attackedPiece));
                         if (attackedPiece.GetType() == typeof(King))
@@ -71,6 +71,6 @@ namespace Chess.Logic.Pieces
         }
 
         protected Move CreateMove(Vector2 targetPos, Piece attackedPiece = null) =>
-            new(this, attackedPiece, targetPos, game);
+            new(this, attackedPiece, targetPos, board);
     }
 }

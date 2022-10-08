@@ -16,9 +16,15 @@ class Board extends Component {
     }
 
     showPossibleMoves(pieceId) {
+        if (this.state.selectedPiece != null && pieceId == this.state.selectedPiece.id) {
+            this.setState({ selectedPiece: null })
+            return;
+        }
+
         if (pieceId != null) {
             let piece = this.state.pieces.find(({ id }) => id === pieceId)
             this.setState({ selectedPiece: piece })
+            return;
         }
     }
 
@@ -94,7 +100,8 @@ class Board extends Component {
 
         const response = await fetch('chess/makemove', requestOptions);
         const data = await response.json();
-        this.setState({ pieces: data })
+        this.showPossibleMoves(this.state.selectedPiece.id);
+        this.setState({ pieces: data });
     }
 
     async populatePieces() {

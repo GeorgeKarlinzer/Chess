@@ -1,6 +1,6 @@
 ﻿namespace Chess.Logic
 {
-    public static class Positions
+    internal static class Positions
     {
         public readonly static Vector2 A1 = new(0, 0);
         public readonly static Vector2 A2 = new(0, 1);

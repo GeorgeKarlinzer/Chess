@@ -2,7 +2,7 @@
 
 namespace Chess.Logic
 {
-    public struct Vector2
+    internal struct Vector2
     {
         public int X { get; }
         public int Y { get; }
