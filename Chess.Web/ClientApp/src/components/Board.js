@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import MoveSquare from './MoveSquare';
 import Piece from './Piece';
 
 class Board extends Component {
@@ -6,39 +7,68 @@ class Board extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { pieces: [], loading: true };
-        this.rerenderParentCallback = this.rerenderParentCallback.bind(this);
+        this.state = { pieces: [], loading: true, selectedPiece: null };
+        this.showPossibleMoves = this.showPossibleMoves.bind(this);
+        this.makeMove = this.makeMove.bind(this)
+        this.renderBoard = this.renderBoard.bind(this)
+        this.renderMoves = this.renderMoves.bind(this)
+        this.renderPieces = this.renderPieces.bind(this)
     }
 
-    rerenderParentCallback() {
-        this.forceUpdate();
+    showPossibleMoves(pieceId) {
+        if (pieceId != null) {
+            let piece = this.state.pieces.find(({ id }) => id === pieceId)
+            this.setState({ selectedPiece: piece })
+        }
     }
 
     componentDidMount() {
         this.populatePieces();
     }
 
-    static renderPiece(piece) {
-        const imgName = `${piece.color.toLowerCase()}-${piece.name.toLowerCase()}.png`;
+    static renderPiece(piece, isSelected, callback) {
+        const imgName = `${piece.color.toLowerCase()}-${piece.name.toLowerCase()}.svg`;
         const img = require('../assets/Pieces/' + imgName);
 
         return (
-            <Piece
-                x={piece.x}
-                y={piece.y}
-                img={img}
-                moves={piece.moves}
-                rerenderParentCallback={this.rerenderParentCallback}>
-            </Piece>
+            <Piece id={piece.id} x={piece.position.x} y={piece.position.y} img={img}
+                showPossibleMoves={callback} isSelected={isSelected} />
         )
     }
 
-    static renderBoard(pieces) {
+    renderPieces() {
         return (
+            <>{
+                this.state.pieces.map(p =>
+                    Board.renderPiece(p, p === this.state.selectedPiece, this.showPossibleMoves))
+            }</>
+        )
+    }
+
+    static renderMove(x, y, callback) {
+        return (
+            <MoveSquare x={x} y={y} makeMove={callback} />
+        )
+    }
+
+    renderMoves() {
+        let moves = []
+        if (this.state.selectedPiece != null)
+            moves = this.state.selectedPiece.moves;
+        return (
+            <>{
+                moves.map(m =>
+                    Board.renderMove(m.x, m.y, this.makeMove))
+            }</>
+        )
+    }
+
+    renderBoard() {
+        return (
+
             <section className="board">
-                {pieces.map((p, i) =>
-                    Board.renderPiece(p)
-                )}
+                {this.renderPieces()}
+                {this.renderMoves()}
             </section>
         )
     }
@@ -46,7 +76,7 @@ class Board extends Component {
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : Board.renderBoard(this.state.pieces);
+            : this.renderBoard();
 
         return (
             <div>
@@ -55,8 +85,20 @@ class Board extends Component {
         );
     }
 
+    async makeMove(x, y) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ PieceId: this.state.selectedPiece.id, TargetPos: { X: x, Y: y } })
+        };
+
+        const response = await fetch('chess/makemove', requestOptions);
+        const data = await response.json();
+        this.setState({ pieces: data })
+    }
+
     async populatePieces() {
-        const response = await fetch('chess/getsomenew');
+        const response = await fetch('chess/getpieces');
         const data = await response.json();
         this.setState({ pieces: data, loading: false });
     }

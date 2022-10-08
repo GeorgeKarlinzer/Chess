@@ -8,36 +8,32 @@ const StyledSquare = styled.div`
     left: ${({ x }) => 4 * x + 'rem'};
     top: ${({ y }) => 4 * convertY(y) + 'rem'};
     position:absolute;
-    background-image: ${({ img }) => 'url(' + img + ')'};
-    background-size: 4rem 4rem;
+    background-color: rgb(54, 219, 39, 0.5);
+    background-size: 1rem 1rem;
     background-repeat: no-repeat;
     background-position: center;
  `
 
-
-class Piece extends Component {
+class MoveSquare extends Component {
 
     constructor(props) {
         super(props)
-        this.state = { x: props.x, y: props.y, img: props.img }
         this.onClick = this.onClick.bind(this)
     }
 
     onClick() {
-        this.props.showPossibleMoves(this.props.id)
+        this.props.makeMove(this.props.x,this.props.y)
     }
 
     render() {
         return (
-            <StyledSquare className={this.props.isSelected ? "selected" : ""}
-                id={this.props.id}
-                x={this.state.x}
-                y={this.state.y}
-                img={this.state.img}
+            <StyledSquare
+                x={this.props.x}
+                y={this.props.y}
                 onClick={() => this.onClick()} >
             </StyledSquare>
         )
     }
 }
 
-export default Piece;
+export default MoveSquare;

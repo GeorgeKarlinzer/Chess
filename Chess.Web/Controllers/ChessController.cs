@@ -1,9 +1,13 @@
 ﻿using Chess.Logic;
+using Chess.Logic.ExtensionMethods;
 using Chess.Logic.Pieces;
+using Chess.Models;
+using Chess.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Chess.Web.Controllers
@@ -21,21 +25,23 @@ namespace Chess.Web.Controllers
         }
 
         [HttpGet]
-        [Route("~/chess/getsomenew")]
-        public IEnumerable<object> GetSomeNew()
+        [Route("~/chess/getpieces")]
+        public object GetPieces()
         {
             var pieces = game.PiecesMap.Values;
 
-            var data = pieces.Select(p => new
-            {
-                x = p.Position.X,
-                y = p.Position.Y,
-                name = p.GetType().Name,
-                color = p.Color.ToString(),
-                moves = p.PossibleMoves.Select(m => new { x = m.TargetPos.X, y = m.TargetPos.Y })
-            });
+            var data = pieces.Select(p => p.ToDto());
 
             return data;
+        }
+
+        [HttpPost]
+        [Route("~/chess/makemove")]
+        public object MakeMove([FromBody] JsonElement data)
+        {
+            var moveDto = data.Deserialize<MoveDto>();
+
+            return GetPieces();
         }
     }
 }

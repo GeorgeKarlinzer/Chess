@@ -17,36 +17,6 @@
     background-image: url('assets/Boards/brown.svg');
     position: relative
 }
-
-.cell {
-    width: 64px;
-    height: 64px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black
-}
-
-    .cell img {
-        width: 48px;
-        height: 48px;
-        position: relative;
-    }
-
 .selected {
     background-color: brown;
-}
-
-.available {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: rgb(138, 218, 19);
-}
-
-.lost {
-    height: calc(50vh - 60px);
-    padding: 30px;
-    margin-left: 50px;
-    background-color: lightgray;
 }

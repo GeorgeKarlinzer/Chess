@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace Chess.Models
 {
-    public class Piece
+    public class PieceDto
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Color { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
+        public PositionDto Position { get; set; }
+        public List<PositionDto> Moves { get; set; }
     }
 }
