@@ -1,7 +1,9 @@
 ﻿using Chess.Logic;
 using Chess.Logic.Pieces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 namespace Chess.Web.Controllers
@@ -20,20 +22,18 @@ namespace Chess.Web.Controllers
 
         [HttpGet]
         [Route("~/chess/getsomenew")]
-        public IEnumerable<Models.Piece> GetSomeNew()
+        public IEnumerable<object> GetSomeNew()
         {
             var pieces = game.PiecesMap.Values;
 
-            var data = new List<Models.Piece>();
-            foreach (var piece in pieces)
+            var data = pieces.Select(p => new
             {
-                data.Add(new Models.Piece() { 
-                    Name = piece.GetType().Name, 
-                    Color = piece.Color.ToString(),
-                    X = piece.Position.X,
-                    Y = piece.Position.Y
-                });
-            }
+                x = p.Position.X,
+                y = p.Position.Y,
+                name = p.GetType().Name,
+                color = p.Color.ToString(),
+                moves = p.PossibleMoves.Select(m => new { x = m.TargetPos.X, y = m.TargetPos.Y })
+            });
 
             return data;
         }

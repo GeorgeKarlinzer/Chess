@@ -7,6 +7,11 @@ class Board extends Component {
     constructor(props) {
         super(props);
         this.state = { pieces: [], loading: true };
+        this.rerenderParentCallback = this.rerenderParentCallback.bind(this);
+    }
+
+    rerenderParentCallback() {
+        this.forceUpdate();
     }
 
     componentDidMount() {
@@ -18,7 +23,13 @@ class Board extends Component {
         const img = require('../assets/Pieces/' + imgName);
 
         return (
-            <Piece x={piece.x} y={piece.y} img={img}></Piece>
+            <Piece
+                x={piece.x}
+                y={piece.y}
+                img={img}
+                moves={piece.moves}
+                rerenderParentCallback={this.rerenderParentCallback}>
+            </Piece>
         )
     }
 
