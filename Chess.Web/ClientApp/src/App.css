@@ -20,3 +20,8 @@
 .selected {
     background-color: brown;
 }
+
+.choosePieceButton{
+    width: 4rem;
+    height: 4rem;
+}

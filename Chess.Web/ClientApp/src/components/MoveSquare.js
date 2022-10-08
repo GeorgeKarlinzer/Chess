@@ -1,4 +1,4 @@
-﻿import React, { Component, FC } from 'react';
+﻿import React, { Component } from 'react';
 import styled from 'styled-components';
 import convertY from '../Models/CoordConverter'
 
@@ -22,7 +22,7 @@ class MoveSquare extends Component {
     }
 
     onClick() {
-        this.props.makeMove(this.props.x,this.props.y)
+        this.props.makeMove(this.props.x, this.props.y, this.props.pieceName, this.props.pieceColor)
     }
 
     render() {

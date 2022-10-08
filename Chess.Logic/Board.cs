@@ -17,12 +17,15 @@ namespace Chess.Logic
 {
     internal class Board
     {
+        private int currentPieceId;
         public List<Move> Moves { get; }
 
         public Dictionary<Vector2, Piece> PiecesMap { get; }
 
         public Board()
         {
+            currentPieceId = 0;
+
             PiecesMap = new();
 
             Moves = new List<Move>();
@@ -210,12 +213,17 @@ namespace Chess.Logic
             AddPiece<King>(Black, E8);
         }
 
-        private void AddPiece<T>(PieceColor color, Vector2 position) where T : Piece
+        public T AddPiece<T>(PieceColor color, Vector2 position) where T : Piece
         {
-            var piece = (T)Activator.CreateInstance(typeof(T), new object[] { color, position, PiecesMap.Count, this });
-            //var piece = new T(color, position, PiecesMap.Count);
+            var piece = (T)Activator.CreateInstance(typeof(T), new object[] { color, position, currentPieceId++, this });
             PiecesMap[piece.Position] = piece;
+
+            return piece;
         }
         #endregion
     }
 }
+
+// TODO: Add pawn metomorphosis
+// TDOD: Add Timer
+// TODO: Handle end of the game

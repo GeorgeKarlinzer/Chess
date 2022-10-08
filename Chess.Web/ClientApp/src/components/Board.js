@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import ChoosePiece from './ChoosePiece';
 import MoveSquare from './MoveSquare';
 import Piece from './Piece';
 
@@ -7,12 +8,15 @@ class Board extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { pieces: [], loading: true, selectedPiece: null };
+        this.state = { pieces: [], loading: true, selectedPiece: null, isChoosingPiece: false };
+
         this.showPossibleMoves = this.showPossibleMoves.bind(this);
         this.makeMove = this.makeMove.bind(this)
+        this.sendMove = this.sendMove.bind(this)
         this.renderBoard = this.renderBoard.bind(this)
         this.renderMoves = this.renderMoves.bind(this)
         this.renderPieces = this.renderPieces.bind(this)
+        this.renderChoosePiece = this.renderChoosePiece.bind(this)
     }
 
     showPossibleMoves(pieceId) {
@@ -28,12 +32,20 @@ class Board extends Component {
         }
     }
 
+    makeMove(x, y, pieceName, pieceColor) {
+        if (pieceName == "pawn" && y == (pieceColor == "white" ? 7 : 0)) {
+            this.setState({ isChoosingPiece: true })
+            return;
+        }
+        this.sendMove(x, y, "");
+    }
+
     componentDidMount() {
         this.populatePieces();
     }
 
     static renderPiece(piece, isSelected, callback) {
-        const imgName = `${piece.color.toLowerCase()}-${piece.name.toLowerCase()}.svg`;
+        const imgName = `${piece.color}-${piece.name}.svg`;
         const img = require('../assets/Pieces/' + imgName);
 
         return (
@@ -51,9 +63,9 @@ class Board extends Component {
         )
     }
 
-    static renderMove(x, y, callback) {
+    static renderMove(x, y, pieceName, pieceColor, callback) {
         return (
-            <MoveSquare x={x} y={y} makeMove={callback} />
+            <MoveSquare x={x} y={y} pieceName={pieceName} pieceColor={pieceColor} makeMove={callback} />
         )
     }
 
@@ -64,9 +76,19 @@ class Board extends Component {
         return (
             <>{
                 moves.map(m =>
-                    Board.renderMove(m.x, m.y, this.makeMove))
+                    Board.renderMove(m.x, m.y, this.state.selectedPiece.name,
+                        this.state.selectedPiece.color, this.makeMove))
             }</>
         )
+    }
+
+    renderChoosePiece() {
+        if (this.state.isChoosingPiece == true)
+            return (
+                <ChoosePiece x={this.state.selectedPiece.position.x} y={this.state.selectedPiece.position.x} ></ChoosePiece> 
+            )
+        else
+            return (<></>)
     }
 
     renderBoard() {
@@ -75,6 +97,7 @@ class Board extends Component {
             <section className="board">
                 {this.renderPieces()}
                 {this.renderMoves()}
+                {this.renderChoosePiece()}
             </section>
         )
     }
@@ -91,11 +114,17 @@ class Board extends Component {
         );
     }
 
-    async makeMove(x, y) {
+    async sendMove(x, y, parameter) {
+        const body = {
+            PieceId: this.state.selectedPiece.id,
+            TargetPos: { X: x, Y: y },
+            Parameter: parameter
+        }
+
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ PieceId: this.state.selectedPiece.id, TargetPos: { X: x, Y: y } })
+            body: JSON.stringify(body)
         };
 
         const response = await fetch('chess/makemove', requestOptions);

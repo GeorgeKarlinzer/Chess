@@ -1,4 +1,5 @@
 ﻿using Chess.Logic;
+using Chess.Logic.Moves;
 using Chess.Logic.Pieces;
 using Chess.Models;
 
@@ -11,8 +12,8 @@ namespace Chess.Logic
             var dto = new PieceDto()
             {
                 Id = piece.Id,
-                Name = piece.GetType().Name,
-                Color = piece.Color.ToString(),
+                Name = piece.GetType().Name.ToLower(),
+                Color = piece.Color.ToString().ToLower(),
                 Position = piece.Position.ToDto(),
                 Moves = new List<PositionDto>()
             };
@@ -27,6 +28,11 @@ namespace Chess.Logic
         public static PositionDto ToDto(this Vector2 pos)
         {
             return new PositionDto() { X = pos.X, Y = pos.Y };
+        }
+
+        public static Vector2 ToVector(this PositionDto pos)
+        {
+            return new Vector2(pos.X, pos.Y);
         }
     }
 }

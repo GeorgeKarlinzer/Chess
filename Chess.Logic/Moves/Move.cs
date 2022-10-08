@@ -26,5 +26,10 @@ namespace Chess.Logic.Moves
             board.MovePiece(Piece, TargetPos, AttackedPiece);
             board.CalculateAvailibleMoves(Piece.Color == White ? Black : White);
         }
+
+        public virtual bool IsThisMove(Vector2 targetPos, object parameter)
+        {
+            return TargetPos == targetPos;
+        }
     }
 }

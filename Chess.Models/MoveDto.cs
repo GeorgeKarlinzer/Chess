@@ -10,5 +10,6 @@ namespace Chess.Models
     {
         public int PieceId { get; set; }
         public PositionDto TargetPos { get; set; }
+        public object Parameter { get; set; }
     }
 }
