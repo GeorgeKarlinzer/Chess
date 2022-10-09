@@ -9,7 +9,7 @@ class Board extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { pieces: [], loading: true, selectedPiece: null, isChoosingPiece: false };
+        this.state = { pieces: [], loading: true, selectedPiece: null, isChoosingPiece: false};
 
         this.showPossibleMoves = this.showPossibleMoves.bind(this);
         this.makeMove = this.makeMove.bind(this)
@@ -19,38 +19,35 @@ class Board extends Component {
         this.renderPieces = this.renderPieces.bind(this)
         this.renderChoosePiece = this.renderChoosePiece.bind(this)
         this.onClick = this.onClick.bind(this)
+        this.move = {}
     }
 
     onClick() {
-        if (this.state.isChoosingPiece === true) {
-            this.setState({ isChoosingPiece: false })
-        }
-
         if (this.state.selectedPiece != null) {
-            this.setState({ selectedPiece: null })
+            this.setState({ isChoosingPiece: false, selectedPiece: null })
         }
     }
 
     showPossibleMoves(pieceId) {
         if (this.state.selectedPiece != null && pieceId == this.state.selectedPiece.id) {
-            this.setState({ selectedPiece: null })
+            this.setState({ selectedPiece: null, isChoosingPiece: false })
             return;
         }
 
         if (pieceId != null) {
             let piece = this.state.pieces.find(({ id }) => id === pieceId)
-            this.setState({ selectedPiece: piece })
+            this.setState({ selectedPiece: piece, isChoosingPiece: false })
             return;
         }
     }
 
-    makeMove(code, isChoosePiece) {
+    makeMove(code, move, isChoosePiece) {
+        this.move = move
         if (isChoosePiece === true) {
             this.setState({ isChoosingPiece: true })
-            return;
         }
-
-        this.sendMove(code);
+        else
+            this.sendMove(code);
     }
 
     componentDidMount() {
@@ -97,7 +94,11 @@ class Board extends Component {
     renderChoosePiece() {
         if (this.state.isChoosingPiece === true)
             return (
-                <ChoosePiece x={this.state.selectedPiece.position.x} y={this.state.selectedPiece.position.x} ></ChoosePiece> 
+                <ChoosePiece piece={this.state.selectedPiece}
+                    makeMove={this.makeMove}
+                    x={this.move.x}
+                    y={this.move.y}
+                ></ChoosePiece>
             )
         else
             return (<></>)

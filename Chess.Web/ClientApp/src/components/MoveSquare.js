@@ -34,7 +34,7 @@ class MoveSquare extends Component {
             isChoosePiece = true;
         }
 
-        this.props.makeMove(code, isChoosePiece);
+        this.props.makeMove(code, { x: this.props.x, y: this.props.y }, isChoosePiece);
     }
 
     render() {

@@ -9,7 +9,7 @@ namespace Chess.Logic.Moves
         public Promotion(Piece piece, Piece attackedPiece, Vector2 targetPos, Board board) : base(piece, attackedPiece, targetPos, board)
         {
             PromotionPieceName = typeof(TNewPiece).Name.ToLower();
-            Code += $"={Piece.PieceCodesMap[typeof(TNewPiece)]}";
+            Code += $"{Piece.PieceCodesMap[typeof(TNewPiece)]}";
         }
 
         public override void MakeMove()

@@ -20,7 +20,9 @@ namespace Chess.Logic
 
             if (piece.Color == currentPlayer)
                 dto.Moves = piece.PossibleMoves.Select(x =>
-                    new PositionDto() { X = x.TargetPos.X, Y = x.TargetPos.Y }).ToList();
+                    new PositionDto() { X = x.TargetPos.X, Y = x.TargetPos.Y })
+                    .Distinct()
+                    .ToList();
 
             return dto;
         }
