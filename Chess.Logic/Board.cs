@@ -47,7 +47,11 @@ namespace Chess.Logic
             PiecesMap.Remove(piece.Position);
 
             if (attackedPiece is not null)
+            {
                 PiecesMap.Remove(attackedPiece.Position);
+            }
+            if(attackedPiece is not null || piece.GetType() == typeof(Pawn))
+                repeatPositionMap.Clear();
 
             PiecesMap[targetPos] = piece;
             piece.Position = targetPos;
@@ -61,9 +65,10 @@ namespace Chess.Logic
             move.MakeMove();
 
             CalculateAvailibleMoves();
+            CalculateFenCode();
 
             IsEnd = !PiecesMap.Values.Where(x => x.Color == CurrentPlayer)
-                .Any(x => x.PossibleMoves.Count > 0);
+                .Any(x => x.PossibleMoves.Count > 0) || repeatPositionMap.Any(x => x.Value == 3);
         }
 
         public void CalculateFenCode()
@@ -93,7 +98,7 @@ namespace Chess.Logic
             }
 
             if (!repeatPositionMap.ContainsKey(str))
-                repeatPositionMap[str] = 0;
+                repeatPositionMap[str] = 1;
             else
                 repeatPositionMap[str]++;
         }
