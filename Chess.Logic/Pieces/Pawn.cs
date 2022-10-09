@@ -31,12 +31,13 @@ namespace Chess.Logic.Pieces
             if (board.CanMove(Position + oneStepUp))
             {
                 AddMoveOrPromotion(Position + oneStepUp, null);
+
+                if (Position.Y == startPosY && board.CanMove(Position + twoStepsUp))
+                {
+                    AddMoveOrPromotion(Position + twoStepsUp, null);
+                }
             }
 
-            if (Position.Y == startPosY && board.CanMove(Position + twoStepsUp))
-            {
-                AddMoveOrPromotion(Position + twoStepsUp, null);
-            }
 
             var deltas = new[] { rightAttack, leftAttack };
 
