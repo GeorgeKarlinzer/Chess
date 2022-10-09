@@ -1,4 +1,5 @@
 ﻿using Chess.Logic.Moves;
+using System.Collections.ObjectModel;
 using System.Net.NetworkInformation;
 using System.Xml.Linq;
 
@@ -6,11 +7,33 @@ namespace Chess.Logic.Pieces
 {
     internal abstract class Piece
     {
+        public static IReadOnlyDictionary<Type, string> PieceNamesMap = new Dictionary<Type, string>()
+        {
+            { typeof(Pawn), "pawn" },
+            { typeof(Bishop), "bishop" },
+            { typeof(Knight), "knight" },
+            { typeof(Rook), "rook" },
+            { typeof(Queen), "queen" },
+            { typeof(King), "king" },
+
+        };
+
+        public static IReadOnlyDictionary<Type, string> PieceCodesMap = new Dictionary<Type, string>()
+        {
+            { typeof(Pawn), "P" },
+            { typeof(Bishop), "B" },
+            { typeof(Knight), "N" },
+            { typeof(Rook), "R" },
+            { typeof(Queen), "Q" },
+            { typeof(King), "K" },
+        };
+
         protected Board board;
 
         public int Id { get; }
-        public string Name { get; }
-        public char FENCode { get; protected set; }
+        public string Name => PieceNamesMap[GetType()];
+        public string Code => PieceCodesMap[GetType()];
+        public string FENCode => Color.IsWhite() ? Code : Code.ToLower();
         public PieceColor Color { get; }
         public Vector2 Position { get; set; }
         public bool IsMoved { get; set; }
@@ -21,9 +44,6 @@ namespace Chess.Logic.Pieces
 
         public Piece(PieceColor color, Vector2 position, int id, Board board)
         {
-            Name = GetType().Name;
-            FENCode = color == PieceColor.White ? char.ToUpper(Name[0]) : char.ToLower(Name[0]);
-
             Color = color;
             Position = position;
             Id = id;

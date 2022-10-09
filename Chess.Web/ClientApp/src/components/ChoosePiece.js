@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import styled from 'styled-components';
-import convertY from '../Models/CoordConverter'
+import { convertY } from '../Models/Converter'
 
 const StyledRectangle = styled.div`
     width: 16rem;

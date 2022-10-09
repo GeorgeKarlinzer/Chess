@@ -2,6 +2,7 @@
 import ChoosePiece from './ChoosePiece';
 import MoveSquare from './MoveSquare';
 import Piece from './Piece';
+import { toChessPos } from '../Models/Converter'
 
 class Board extends Component {
     static displayName = Board.name;
@@ -43,12 +44,13 @@ class Board extends Component {
         }
     }
 
-    makeMove(x, y, pieceName, pieceColor) {
-        if (pieceName == "pawn" && y == (pieceColor == "white" ? 7 : 0)) {
+    makeMove(code, isChoosePiece) {
+        if (isChoosePiece === true) {
             this.setState({ isChoosingPiece: true })
             return;
         }
-        this.sendMove(x, y, "");
+
+        this.sendMove(code);
     }
 
     componentDidMount() {
@@ -74,9 +76,9 @@ class Board extends Component {
         )
     }
 
-    static renderMove(x, y, pieceName, pieceColor, callback) {
+    static renderMove(x, y, piece, callback) {
         return (
-            <MoveSquare x={x} y={y} pieceName={pieceName} pieceColor={pieceColor} makeMove={callback} />
+            <MoveSquare x={x} y={y} piece={piece} makeMove={callback} />
         )
     }
 
@@ -87,8 +89,7 @@ class Board extends Component {
         return (
             <>{
                 moves.map(m =>
-                    Board.renderMove(m.x, m.y, this.state.selectedPiece.name,
-                        this.state.selectedPiece.color, this.makeMove))
+                    Board.renderMove(m.x, m.y, this.state.selectedPiece, this.makeMove))
             }</>
         )
     }
@@ -125,17 +126,11 @@ class Board extends Component {
         );
     }
 
-    async sendMove(x, y, parameter) {
-        const body = {
-            PieceId: this.state.selectedPiece.id,
-            TargetPos: { X: x, Y: y },
-            Parameter: parameter
-        }
-
+    async sendMove(code) {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
+            body: JSON.stringify(code)
         };
 
         const response = await fetch('chess/makemove', requestOptions);
@@ -157,7 +152,6 @@ class Board extends Component {
     async populatePieces() {
         const response = await fetch('chess/getpieces');
         const data = await response.json();
-        console.log(data)
         this.setState({ pieces: data.pieces, loading: false });
     }
 }

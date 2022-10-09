@@ -1,6 +1,6 @@
-﻿import React, { Component, FC } from 'react';
+﻿import React, { Component } from 'react';
 import styled from 'styled-components';
-import convertY from '../Models/CoordConverter'
+import { convertY } from '../Models/Converter'
 
 const StyledSquare = styled.div`
     width: 4rem;

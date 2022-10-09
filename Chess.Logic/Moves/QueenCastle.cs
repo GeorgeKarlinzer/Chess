@@ -8,7 +8,8 @@ namespace Chess.Logic.Moves
     {
         private readonly Rook rook;
 
-        public QueenCastle(Piece piece, Rook rook, Board board) : base(piece, null, piece.Color == White ? C1 : C8, board)
+        public QueenCastle(Piece piece, Rook rook, Board board) : 
+            base(piece, null, piece.Color == White ? VectorsMap["c1"] : VectorsMap["c8"], board)
         {
             this.rook = rook;
         }

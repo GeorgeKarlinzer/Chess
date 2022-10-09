@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import styled from 'styled-components';
-import convertY from '../Models/CoordConverter'
+import { convertY, toChessPos } from '../Models/Converter'
 
 const StyledSquare = styled.div`
     width: 4rem;
@@ -23,7 +23,18 @@ class MoveSquare extends Component {
 
     onClick(e) {
         e.stopPropagation();
-        this.props.makeMove(this.props.x, this.props.y, this.props.pieceName, this.props.pieceColor)
+        const piece = this.props.piece;
+        const sourcePos = toChessPos(piece.position.x, piece.position.y);
+        const targetPos = toChessPos(this.props.x, this.props.y);
+        const code = sourcePos + targetPos;
+        let isChoosePiece = false;
+
+        const promotionY = piece.color === "white" ? 7 : 0;
+        if (this.props.y === promotionY && piece.name === "pawn") {
+            isChoosePiece = true;
+        }
+
+        this.props.makeMove(code, isChoosePiece);
     }
 
     render() {

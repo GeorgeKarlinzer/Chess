@@ -9,6 +9,7 @@ namespace Chess.Logic.Moves
         public Promotion(Piece piece, Piece attackedPiece, Vector2 targetPos, Board board) : base(piece, attackedPiece, targetPos, board)
         {
             PromotionPieceName = typeof(TNewPiece).Name.ToLower();
+            Code += $"={Piece.PieceCodesMap[typeof(TNewPiece)]}";
         }
 
         public override void MakeMove()
@@ -16,11 +17,6 @@ namespace Chess.Logic.Moves
             board.MovePiece(Piece, TargetPos, AttackedPiece);
             var newPiece = board.AddPiece<TNewPiece>(Piece.Color, Piece.Position);
             board.MovePiece(newPiece, TargetPos, Piece);
-        }
-
-        public override bool IsThisMove(Vector2 targetPos, object parameter)
-        {
-            return TargetPos == targetPos && PromotionPieceName == parameter?.ToString();
         }
     }
 }

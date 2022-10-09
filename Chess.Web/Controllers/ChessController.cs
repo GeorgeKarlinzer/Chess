@@ -14,10 +14,6 @@ namespace Chess.Web.Controllers
         private static Game game = new();
         private readonly ILogger<ChessController> _logger;
 
-        static ChessController()
-        {
-        }
-
         public ChessController(ILogger<ChessController> logger)
         {
             _logger = logger;
@@ -42,9 +38,9 @@ namespace Chess.Web.Controllers
         [Route("~/chess/makemove")]
         public object MakeMove([FromBody] JsonElement data)
         {
-            var moveDto = data.Deserialize<MoveDto>();
+            var moveCode = data.Deserialize<string>();
 
-            game.MakeMove(moveDto);
+            game.MakeMove(moveCode);
 
             return GetPieces();
         }

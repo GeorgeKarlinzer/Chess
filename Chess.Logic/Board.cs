@@ -167,8 +167,8 @@ namespace Chess.Logic
             var kingCastle = king.PossibleMoves.FirstOrDefault(x => x.GetType() == typeof(KingCastle));
             var queenCastle = king.PossibleMoves.FirstOrDefault(x => x.GetType() == typeof(QueenCastle));
 
-            var breakKingCastlePoss = king.Color == White ? new[] { E1, F1 } : new[] { E8, F8 };
-            var breakQueenCastlePoss = king.Color == White ? new[] { E1, D1 } : new[] { E8, D8 };
+            var breakKingCastlePoss = king.Color.IsWhite() ? GetVectors("e1", "f1") : GetVectors("e8", "f8");
+            var breakQueenCastlePoss = king.Color.IsWhite() ? GetVectors("e1", "d1") : GetVectors("e8", "d8"); 
 
             if (kingCastle is not null && attackedCells.Any(x => breakKingCastlePoss.Contains(x)))
             {
@@ -216,34 +216,36 @@ namespace Chess.Logic
         #region Generating
         private void GeneratePieces()
         {
-            var pawnPos = new[] { A2, B2, C2, D2, E2, F2, G2, H2 };
+            var pawnPos =  new[] { "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2" };
 
             foreach (var pos in pawnPos)
             {
-                AddPiece<Pawn>(White, pos);
-                AddPiece<Pawn>(Black, new(pos.X, pos.Y + 5));
+                var v = VectorsMap[pos];
+
+                AddPiece<Pawn>(White, v);
+                AddPiece<Pawn>(Black, new(v.X, v.Y + 5));
             }
 
-            AddPiece<Rook>(White, A1);
-            AddPiece<Rook>(White, H1);
-            AddPiece<Rook>(Black, A8);
-            AddPiece<Rook>(Black, H8);
+            AddPiece<Rook>(White, VectorsMap["a1"]);
+            AddPiece<Rook>(White, VectorsMap["h1"]);
+            AddPiece<Rook>(Black, VectorsMap["a8"]);
+            AddPiece<Rook>(Black, VectorsMap["h8"]);
 
-            AddPiece<Knight>(White, B1);
-            AddPiece<Knight>(White, G1);
-            AddPiece<Knight>(Black, B8);
-            AddPiece<Knight>(Black, G8);
+            AddPiece<Knight>(White, VectorsMap["b1"]);
+            AddPiece<Knight>(White, VectorsMap["g1"]);
+            AddPiece<Knight>(Black, VectorsMap["b8"]);
+            AddPiece<Knight>(Black, VectorsMap["g8"]);
 
-            AddPiece<Bishop>(White, C1);
-            AddPiece<Bishop>(White, F1);
-            AddPiece<Bishop>(Black, C8);
-            AddPiece<Bishop>(Black, F8);
+            AddPiece<Bishop>(White, VectorsMap["c1"]);
+            AddPiece<Bishop>(White, VectorsMap["f1"]);
+            AddPiece<Bishop>(Black, VectorsMap["c8"]);
+            AddPiece<Bishop>(Black, VectorsMap["f8"]);
 
-            AddPiece<Queen>(White, D1);
-            AddPiece<Queen>(Black, D8);
+            AddPiece<Queen>(White, VectorsMap["d1"]);
+            AddPiece<Queen>(Black, VectorsMap["d8"]);
 
-            AddPiece<King>(White, E1);
-            AddPiece<King>(Black, E8);
+            AddPiece<King>(White, VectorsMap["e1"]);
+            AddPiece<King>(Black, VectorsMap["e8"]);
         }
 
         public T AddPiece<T>(PieceColor color, Vector2 position) where T : Piece

@@ -35,10 +35,10 @@ namespace Chess.Logic.Pieces
 
             if (!IsMoved)
             {
-                var breakKingCastlePoss = Color == White ? new[] { G1, F1 } : new[] { G8, F8 };
-                var breakQueenCastlePoss = Color == White ? new[] { B1, C1, D1 } : new[] { B8, C8, D8 };
-                var kingRookPos = Color == White ? H1 : H8;
-                var queenRookPos = Color == White ? A1 : A8;
+                var breakKingCastlePoss = Color.IsWhite() ? GetVectors("g1", "f1") : GetVectors("g8", "f8");
+                var breakQueenCastlePoss = Color.IsWhite() ? GetVectors("b1", "c1", "d1") : GetVectors("b8", "c8", "d8");
+                var kingRookPos = Color.IsWhite() ? VectorsMap["h1"] : VectorsMap["h8"];
+                var queenRookPos = Color.IsWhite() ? VectorsMap["a1"] : VectorsMap["a8"];
 
                 if (board.PiecesMap.TryGetValue(kingRookPos, out var kingRook) && !kingRook.IsMoved
                     && !board.PiecesMap.Keys.Any(x => breakKingCastlePoss.Contains(x)))

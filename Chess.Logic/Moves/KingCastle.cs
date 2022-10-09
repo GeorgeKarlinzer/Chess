@@ -1,5 +1,4 @@
 ﻿using Chess.Logic.Pieces;
-using static Chess.Logic.PieceColor;
 using static Chess.Logic.Positions;
 
 namespace Chess.Logic.Moves
@@ -8,7 +7,8 @@ namespace Chess.Logic.Moves
     {
         private readonly Rook rook;
 
-        public KingCastle(Piece piece, Rook rook, Board board) : base(piece, null, piece.Color == White ? G1 : G8, board)
+        public KingCastle(Piece piece, Rook rook, Board board) : 
+            base(piece, null, piece.Color.IsWhite() ? VectorsMap["g1"] : VectorsMap["g8"], board)
         {
             this.rook = rook;
         }

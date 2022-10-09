@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Chess.Models
 {
-    public class MoveDto
-    {
-        public int PieceId { get; set; }
-        public PositionDto TargetPos { get; set; }
-        public object Parameter { get; set; }
-    }
+    //public class MoveDto
+    //{
+    //    public int PieceId { get; set; }
+    //    public PositionDto TargetPos { get; set; }
+    //    public string Code { get; set; }
+    //}
 }
