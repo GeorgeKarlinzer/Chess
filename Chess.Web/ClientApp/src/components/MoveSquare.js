@@ -21,7 +21,8 @@ class MoveSquare extends Component {
         this.onClick = this.onClick.bind(this)
     }
 
-    onClick() {
+    onClick(e) {
+        e.stopPropagation();
         this.props.makeMove(this.props.x, this.props.y, this.props.pieceName, this.props.pieceColor)
     }
 
@@ -30,7 +31,7 @@ class MoveSquare extends Component {
             <StyledSquare
                 x={this.props.x}
                 y={this.props.y}
-                onClick={() => this.onClick()} >
+                onClick={(e) => this.onClick(e)} >
             </StyledSquare>
         )
     }

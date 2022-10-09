@@ -17,6 +17,17 @@ class Board extends Component {
         this.renderMoves = this.renderMoves.bind(this)
         this.renderPieces = this.renderPieces.bind(this)
         this.renderChoosePiece = this.renderChoosePiece.bind(this)
+        this.onClick = this.onClick.bind(this)
+    }
+
+    onClick() {
+        if (this.state.isChoosingPiece === true) {
+            this.setState({ isChoosingPiece: false })
+        }
+
+        if (this.state.selectedPiece != null) {
+            this.setState({ selectedPiece: null })
+        }
     }
 
     showPossibleMoves(pieceId) {
@@ -83,7 +94,7 @@ class Board extends Component {
     }
 
     renderChoosePiece() {
-        if (this.state.isChoosingPiece == true)
+        if (this.state.isChoosingPiece === true)
             return (
                 <ChoosePiece x={this.state.selectedPiece.position.x} y={this.state.selectedPiece.position.x} ></ChoosePiece> 
             )
@@ -94,7 +105,7 @@ class Board extends Component {
     renderBoard() {
         return (
 
-            <section className="board">
+            <section className="board" onClick={(e) => this.onClick(e)}>
                 {this.renderPieces()}
                 {this.renderMoves()}
                 {this.renderChoosePiece()}

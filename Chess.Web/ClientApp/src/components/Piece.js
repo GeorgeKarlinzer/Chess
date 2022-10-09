@@ -23,7 +23,8 @@ class Piece extends Component {
         this.onClick = this.onClick.bind(this)
     }
 
-    onClick() {
+    onClick(e) {
+        e.stopPropagation();
         this.props.showPossibleMoves(this.props.id)
     }
 
@@ -34,7 +35,7 @@ class Piece extends Component {
                 x={this.props.x}
                 y={this.props.y}
                 img={this.props.img}
-                onClick={() => this.onClick()} >
+                onClick={(e) => this.onClick(e)} >
             </StyledSquare>
         )
     }
