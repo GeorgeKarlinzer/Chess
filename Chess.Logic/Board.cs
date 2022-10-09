@@ -68,7 +68,9 @@ namespace Chess.Logic
             CalculateFenCode();
 
             IsEnd = !PiecesMap.Values.Where(x => x.Color == CurrentPlayer)
-                .Any(x => x.PossibleMoves.Count > 0) || repeatPositionMap.Any(x => x.Value == 3);
+                .Any(x => x.PossibleMoves.Count > 0)
+                    || repeatPositionMap.Any(x => x.Value == 3)
+                    || repeatPositionMap.Count == 100;
         }
 
         public void CalculateFenCode()
