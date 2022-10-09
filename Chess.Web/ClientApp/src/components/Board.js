@@ -140,14 +140,25 @@ class Board extends Component {
 
         const response = await fetch('chess/makemove', requestOptions);
         const data = await response.json();
+        if (data.isEnd === true) {
+            console.log('end')
+            return;
+        }
+
+        if (data.isCheck === true) {
+            console.log('check')
+        }
+
         this.showPossibleMoves(this.state.selectedPiece.id);
-        this.setState({ pieces: data });
+
+        this.setState({ pieces: data.pieces });
     }
 
     async populatePieces() {
         const response = await fetch('chess/getpieces');
         const data = await response.json();
-        this.setState({ pieces: data, loading: false });
+        console.log(data)
+        this.setState({ pieces: data.pieces, loading: false });
     }
 }
 

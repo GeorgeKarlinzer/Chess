@@ -17,7 +17,6 @@ namespace Chess.Logic.Moves
         {
             board.MovePiece(Piece, TargetPos, AttackedPiece);
             board.MovePiece(rook, rook.Position + new Vector2(-2, 0));
-            board.CalculateAvailibleMoves(Piece.Color == White ? Black : White);
         }
     }
 }

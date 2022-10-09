@@ -4,6 +4,7 @@
     {
         public Knight(PieceColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
         {
+            FENCode = color == PieceColor.White ? 'N' : 'n';
         }
 
         public override void CalculateMoves()

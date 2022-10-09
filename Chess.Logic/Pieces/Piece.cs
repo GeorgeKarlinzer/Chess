@@ -1,5 +1,6 @@
 ﻿using Chess.Logic.Moves;
 using System.Net.NetworkInformation;
+using System.Xml.Linq;
 
 namespace Chess.Logic.Pieces
 {
@@ -8,6 +9,8 @@ namespace Chess.Logic.Pieces
         protected Board board;
 
         public int Id { get; }
+        public string Name { get; }
+        public char FENCode { get; protected set; }
         public PieceColor Color { get; }
         public Vector2 Position { get; set; }
         public bool IsMoved { get; set; }
@@ -18,6 +21,9 @@ namespace Chess.Logic.Pieces
 
         public Piece(PieceColor color, Vector2 position, int id, Board board)
         {
+            Name = GetType().Name;
+            FENCode = color == PieceColor.White ? char.ToUpper(Name[0]) : char.ToLower(Name[0]);
+
             Color = color;
             Position = position;
             Id = id;

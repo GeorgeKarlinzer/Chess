@@ -12,34 +12,34 @@ using System.Runtime.CompilerServices;
 using Chess.Logic.Moves;
 using Chess.Logic.Pieces;
 using System.Drawing;
+using System.Xml.Serialization;
 
 namespace Chess.Logic
 {
     internal class Board
     {
         private int currentPieceId;
-        public List<Move> Moves { get; }
+        private Dictionary<string, int> repeatPositionMap;
 
+        public PieceColor CurrentPlayer { get; private set; }
+
+        public List<Move> Moves { get; }
         public Dictionary<Vector2, Piece> PiecesMap { get; }
+
+        public bool IsCheck { get; private set; }
+        public bool IsEnd { get; private set; }
 
         public Board()
         {
             currentPieceId = 0;
-
+            repeatPositionMap = new();
             PiecesMap = new();
-
-            Moves = new List<Move>();
+            Moves = new();
+            CurrentPlayer = White;
 
             GeneratePieces();
 
-            CalculateAvailibleMoves(White);
-        }
-
-        public static void MakeMove(Piece piece, Vector2 targetPos)
-        {
-            piece.PossibleMoves
-                .FirstOrDefault(x => x.TargetPos == targetPos)
-                ?.MakeMove();
+            CalculateAvailibleMoves();
         }
 
         public void MovePiece(Piece piece, Vector2 targetPos, Piece attackedPiece = null)
@@ -54,18 +54,62 @@ namespace Chess.Logic
             piece.IsMoved = true;
         }
 
+        public void MakeMove(Move move)
+        {
+            CurrentPlayer = CurrentPlayer == White ? Black : White;
+
+            move.MakeMove();
+
+            CalculateAvailibleMoves();
+
+            IsEnd = !PiecesMap.Values.Where(x => x.Color == CurrentPlayer)
+                .Any(x => x.PossibleMoves.Count > 0);
+        }
+
+        public void CalculateFenCode()
+        {
+            var str = "";
+            for (int y = 7; y >= 0; y--)
+            {
+                var emptyCells = 0;
+                for (int x = 0; x < 8; x++)
+                {
+                    if (PiecesMap.TryGetValue(new(x, y), out var piece))
+                    {
+                        str += piece.FENCode;
+
+                        if (emptyCells != 0)
+                            str += emptyCells.ToString();
+
+                        emptyCells = 0;
+                    }
+                    else
+                        emptyCells++;
+                }
+                if (emptyCells != 0)
+                    str += emptyCells.ToString();
+
+                str += "/";
+            }
+
+            if (!repeatPositionMap.ContainsKey(str))
+                repeatPositionMap[str] = 0;
+            else
+                repeatPositionMap[str]++;
+        }
+
         #region Moves calculating
 
-        public void CalculateAvailibleMoves(PieceColor color)
+        public void CalculateAvailibleMoves()
         {
             PiecesMap.Values.Foreach(x => x.CalculateMoves());
 
             var king = PiecesMap.Values
-                .First(x => x.GetType() == typeof(King) && x.Color == color);
+                .First(x => x.GetType() == typeof(King) && x.Color == CurrentPlayer);
 
             var kingPos = king.Position;
 
-            foreach (var enemyPiece in PiecesMap.Values.Where(x => x.Color != color))
+            foreach (var enemyPiece in PiecesMap.Values.Where(x => x.Color != CurrentPlayer))
             {
                 var type = enemyPiece.GetType();
                 var enemyPos = enemyPiece.Position;
@@ -105,10 +149,8 @@ namespace Chess.Logic
                 }
             }
 
-            // для каждой фигуры которая может атаковать короля убираем все ходы наших фигур которые не препятствут шаху. Можно добвавить в фигуры функцию SaveFromCheck()
-
             var attackedCells = PiecesMap.Values
-                .Where(x => x.Color != color)
+                .Where(x => x.Color != CurrentPlayer)
                 .SelectMany(x => x.PossibleAttacks)
                 .Distinct()
                 .ToList();
@@ -134,14 +176,16 @@ namespace Chess.Logic
             }
 
             var attackedPieces = PiecesMap.Values
-                .Where(x => x.Color != color && x.KingAttacks.Count != 0)
+                .Where(x => x.Color != CurrentPlayer && x.KingAttacks.Count != 0)
                 .ToList();
+
+            IsCheck = attackedPieces.Any();
 
             if (attackedPieces.Count == 1)
             {
                 var attackedPiece = attackedPieces.First();
 
-                foreach (var piece in PiecesMap.Values.Where(x => x.Color == color && x != king))
+                foreach (var piece in PiecesMap.Values.Where(x => x.Color == CurrentPlayer && x != king))
                 {
                     piece.PossibleMoves.Where(x => !attackedPiece.KingAttacks.Contains(x.TargetPos))
                         .ToList()
@@ -149,22 +193,6 @@ namespace Chess.Logic
                 }
             }
 
-            var isCheckmateOrStalemate = !PiecesMap.Values.Where(x => x.Color == color)
-                .Any(x => x.PossibleMoves.Count > 0);
-
-            if (isCheckmateOrStalemate)
-            {
-                if (attackedPieces.Count > 0)
-                {
-                    PiecesMap.Where(x => x.Value.Color == color)
-                        .ToList()
-                        .Foreach(x => PiecesMap.Remove(x.Key));
-                }
-                else
-                {
-                    PiecesMap.Clear();
-                }
-            }
         }
 
         public bool CanMove(Vector2 targetPos)

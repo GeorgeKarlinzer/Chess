@@ -50,18 +50,11 @@ namespace Chess.Logic
         public static Vector2 operator /(Vector2 a, int b) =>
             new(a.X / b, a.Y / b);
 
-        public override bool Equals([NotNullWhen(true)] object obj)
-        {
-            if (obj is not Vector2 v)
-                return false;
+        public override bool Equals([NotNullWhen(true)] object obj) =>
+            obj is Vector2 v && v == this;
 
-            return X == v.X && Y == v.Y;
-        }
-
-        public override int GetHashCode()
-        {
-            return X.GetHashCode() >> 3 ^ Y.GetHashCode();
-        }
+        public override int GetHashCode() =>
+            X.GetHashCode() >> 3 ^ Y.GetHashCode();
 
         public static bool operator ==(Vector2 a, Vector2 b) =>
             a.X == b.X && a.Y == b.Y;

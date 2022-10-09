@@ -24,7 +24,6 @@ namespace Chess.Logic.Moves
         public virtual void MakeMove()
         {
             board.MovePiece(Piece, TargetPos, AttackedPiece);
-            board.CalculateAvailibleMoves(Piece.Color == White ? Black : White);
         }
 
         public virtual bool IsThisMove(Vector2 targetPos, object parameter)
