@@ -2,7 +2,7 @@
 {
     internal class Queen : Piece
     {
-        public Queen(PieceColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
+        public Queen(PlayerColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
         {
         }
 

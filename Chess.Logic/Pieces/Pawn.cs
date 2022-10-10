@@ -1,5 +1,5 @@
 ﻿using Chess.Logic.Moves;
-using static Chess.Logic.PieceColor;
+using static Chess.Logic.PlayerColor;
 
 namespace Chess.Logic.Pieces
 {
@@ -13,7 +13,7 @@ namespace Chess.Logic.Pieces
         private readonly Vector2 rightAttack;
         private readonly Vector2 leftAttack;
 
-        public Pawn(PieceColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
+        public Pawn(PlayerColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
         {
             startPosY = Color == White ? 1 : 6;
             promotionY = Color == White ? 7 : 0;

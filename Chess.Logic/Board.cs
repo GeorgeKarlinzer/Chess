@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Chess.Logic.PieceColor;
+using static Chess.Logic.PlayerColor;
 using static Chess.Logic.Positions;
 using System.Runtime.InteropServices;
 using System.ComponentModel.DataAnnotations;
@@ -16,12 +16,14 @@ using System.Xml.Serialization;
 
 namespace Chess.Logic
 {
+    // TODO: Threefold repetition (en passant and castle)
     internal class Board
     {
         private int currentPieceId;
         private Dictionary<string, int> repeatPositionMap;
+        private IPlayerSwitch playerSwitch;
 
-        public PieceColor CurrentPlayer { get; private set; }
+        public PlayerColor CurrentPlayer { get; private set; }
 
         public List<Move> Moves { get; }
         public Dictionary<Vector2, Piece> PiecesMap { get; }
@@ -29,13 +31,14 @@ namespace Chess.Logic
         public bool IsCheck { get; private set; }
         public bool IsEnd { get; private set; }
 
-        public Board()
+        public Board(IPlayerSwitch playerSwitch)
         {
             currentPieceId = 0;
             repeatPositionMap = new();
             PiecesMap = new();
             Moves = new();
             CurrentPlayer = White;
+            this.playerSwitch = playerSwitch;
 
             GeneratePieces();
 
@@ -60,7 +63,7 @@ namespace Chess.Logic
 
         public void MakeMove(Move move)
         {
-            CurrentPlayer = CurrentPlayer == White ? Black : White;
+            CurrentPlayer = playerSwitch.Switch(CurrentPlayer);
 
             move.MakeMove();
 
@@ -207,7 +210,7 @@ namespace Chess.Logic
             return targetPos.IsValidChessPos() && !PiecesMap.ContainsKey(targetPos);
         }
 
-        public bool CanBeat(Vector2 targetPos, PieceColor color, out Piece attackedPiece)
+        public bool CanBeat(Vector2 targetPos, PlayerColor color, out Piece attackedPiece)
         {
             var canBeat = PiecesMap.TryGetValue(targetPos, out var piece) && piece.Color != color;
             attackedPiece = canBeat ? piece : null;
@@ -250,7 +253,7 @@ namespace Chess.Logic
             AddPiece<King>(Black, VectorsMap["e8"]);
         }
 
-        public T AddPiece<T>(PieceColor color, Vector2 position) where T : Piece
+        public T AddPiece<T>(PlayerColor color, Vector2 position) where T : Piece
         {
             var piece = (T)Activator.CreateInstance(typeof(T), new object[] { color, position, currentPieceId++, this });
             PiecesMap[piece.Position] = piece;

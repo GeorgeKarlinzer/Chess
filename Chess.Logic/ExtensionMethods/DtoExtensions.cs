@@ -7,7 +7,7 @@ namespace Chess.Logic
 {
     internal static class DtoExtensions
     {
-        public static PieceDto ToDto(this Piece piece, PieceColor currentPlayer)
+        public static PieceDto ToDto(this Piece piece, PlayerColor currentPlayer)
         {
             var dto = new PieceDto()
             {

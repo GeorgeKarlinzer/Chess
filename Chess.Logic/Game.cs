@@ -13,7 +13,7 @@ namespace Chess.Logic
     {
         private Board board;
 
-        public Game()
+        public Game(int time, int bonus)
         {
             board = new Board();
         }

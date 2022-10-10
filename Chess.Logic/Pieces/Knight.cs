@@ -2,7 +2,7 @@
 {
     internal class Knight : Piece
     {
-        public Knight(PieceColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
+        public Knight(PlayerColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
         {
         }
 

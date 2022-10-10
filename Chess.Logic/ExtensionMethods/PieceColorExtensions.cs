@@ -9,7 +9,7 @@ namespace Chess.Logic
 {
     internal static class PieceColorExtensions
     {
-        public static bool IsWhite(this PieceColor color) =>
-            color == PieceColor.White;
+        public static bool IsWhite(this PlayerColor color) =>
+            color == PlayerColor.White;
     }
 }

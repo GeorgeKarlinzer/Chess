@@ -1,5 +1,5 @@
 ﻿using Chess.Logic.Pieces;
-using static Chess.Logic.PieceColor;
+using static Chess.Logic.PlayerColor;
 
 namespace Chess.Logic.Moves
 {

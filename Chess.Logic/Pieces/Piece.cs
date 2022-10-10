@@ -34,7 +34,7 @@ namespace Chess.Logic.Pieces
         public string Name => PieceNamesMap[GetType()];
         public string Code => PieceCodesMap[GetType()];
         public string FENCode => Color.IsWhite() ? Code : Code.ToLower();
-        public PieceColor Color { get; }
+        public PlayerColor Color { get; }
         public Vector2 Position { get; set; }
         public bool IsMoved { get; set; }
 
@@ -42,7 +42,7 @@ namespace Chess.Logic.Pieces
         public List<Vector2> PossibleAttacks { get; }
         public List<Vector2> KingAttacks { get; }
 
-        public Piece(PieceColor color, Vector2 position, int id, Board board)
+        public Piece(PlayerColor color, Vector2 position, int id, Board board)
         {
             Color = color;
             Position = position;

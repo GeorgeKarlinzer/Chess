@@ -1,12 +1,12 @@
 ﻿using Chess.Logic.Moves;
-using static Chess.Logic.PieceColor;
+using static Chess.Logic.PlayerColor;
 using static Chess.Logic.Positions;
 
 namespace Chess.Logic.Pieces
 {
     internal class King : Piece
     {
-        public King(PieceColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
+        public King(PlayerColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
         {
         }
 
