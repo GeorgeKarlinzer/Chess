@@ -10,5 +10,8 @@ namespace Chess.Logic
     {
         public PlayerColor Switch(PlayerColor color) =>
             color.IsWhite() ? PlayerColor.Black : PlayerColor.White;
+
+        public PlayerColor SwitchBack(PlayerColor color) =>
+            Switch(color);
     }
 }

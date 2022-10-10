@@ -3,5 +3,6 @@
     internal interface IPlayerSwitch
     {
         PlayerColor Switch(PlayerColor color);
+        PlayerColor SwitchBack(PlayerColor color);
     }
 }

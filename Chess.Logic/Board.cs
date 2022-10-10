@@ -19,6 +19,8 @@ namespace Chess.Logic
     // TODO: Threefold repetition (en passant and castle)
     internal class Board
     {
+        public Clock Clock { get; }
+
         private int currentPieceId;
         private Dictionary<string, int> repeatPositionMap;
         private IPlayerSwitch playerSwitch;
@@ -31,7 +33,7 @@ namespace Chess.Logic
         public bool IsCheck { get; private set; }
         public bool IsEnd { get; private set; }
 
-        public Board(IPlayerSwitch playerSwitch)
+        public Board(int time, int bonus, IPlayerSwitch playerSwitch)
         {
             currentPieceId = 0;
             repeatPositionMap = new();
@@ -39,6 +41,7 @@ namespace Chess.Logic
             Moves = new();
             CurrentPlayer = White;
             this.playerSwitch = playerSwitch;
+            Clock = new Clock(time, bonus, playerSwitch);
 
             GeneratePieces();
 
@@ -63,6 +66,7 @@ namespace Chess.Logic
 
         public void MakeMove(Move move)
         {
+            Clock.PressAndPause();
             CurrentPlayer = playerSwitch.Switch(CurrentPlayer);
 
             move.MakeMove();
@@ -71,9 +75,12 @@ namespace Chess.Logic
             CalculateFenCode();
 
             IsEnd = !PiecesMap.Values.Where(x => x.Color == CurrentPlayer)
-                .Any(x => x.PossibleMoves.Count > 0)
+                        .Any(x => x.PossibleMoves.Count > 0)
                     || repeatPositionMap.Any(x => x.Value == 3)
-                    || repeatPositionMap.Count == 100;
+                    || repeatPositionMap.Count == 100
+                    || Clock.GetTime(playerSwitch.SwitchBack(CurrentPlayer)) == 0;
+
+            Clock.StartForNextPlayer();
         }
 
         public void CalculateFenCode()

@@ -11,18 +11,24 @@ namespace Chess.Logic
 {
     public class Game
     {
-        private Board board;
+        private readonly Board board;
+        private readonly PlayerSwitch playerSwitch;
 
-        public Game(int time, int bonus)
+        public Game(int timeSec, int bonusSec)
         {
-            board = new Board();
+            playerSwitch = new PlayerSwitch();
+            board = new Board(timeSec, bonusSec, playerSwitch);
         }
 
-        public (List<PieceDto> pieces, bool isCheck, bool isEnd) GetGameState()
+        public (List<PieceDto> pieces, bool isCheck, bool isEnd, int remainTime) GetGameState()
         {
             var pieces = board.PiecesMap.Values.Select(x => x.ToDto(board.CurrentPlayer)).ToList();
 
-            return (pieces, board.IsCheck, board.IsEnd);
+            var isCheck = board.IsCheck;
+            var isEnd = board.IsEnd;
+            var time = board.Clock.GetTime(playerSwitch.SwitchBack(board.CurrentPlayer));
+
+            return (pieces, isCheck, isEnd, time);
         }
 
         /// <summary>
