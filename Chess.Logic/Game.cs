@@ -20,15 +20,16 @@ namespace Chess.Logic
             board = new Board(timeSec, bonusSec, playerSwitch);
         }
 
-        public (List<PieceDto> pieces, bool isCheck, bool isEnd, int remainTime) GetGameState()
+        public (List<PieceDto> pieces, bool isCheck, bool isEnd, int blackTime, int whiteTime, string currentPlayer) GetGameState()
         {
             var pieces = board.PiecesMap.Values.Select(x => x.ToDto(board.CurrentPlayer)).ToList();
 
             var isCheck = board.IsCheck;
             var isEnd = board.IsEnd;
-            var time = board.Clock.GetTime(playerSwitch.SwitchBack(board.CurrentPlayer));
+            var whiteTime = board.Clock.GetTime(PlayerColor.White);
+            var blackTime = board.Clock.GetTime(PlayerColor.Black);
 
-            return (pieces, isCheck, isEnd, time);
+            return (pieces, isCheck, isEnd, blackTime, whiteTime, board.CurrentPlayer.ToString());
         }
 
         /// <summary>

@@ -25,3 +25,22 @@
     width: 4rem;
     height: 4rem;
 }
+
+.timerDiv {
+    height: 8rem;
+    width: 10rem;
+    background-color: #a1807d;
+    text-align: center;
+    font-size: 2.5rem;
+    position: relative;
+    left: 32rem;
+    top: -20rem;
+}
+
+.timer {
+    height: 4rem;
+    width: 10rem;
+    background-color: #a1807d;
+    text-align: center;
+    font-size: 2.5rem;
+}
