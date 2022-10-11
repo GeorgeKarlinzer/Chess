@@ -9,11 +9,10 @@ class Board extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { pieces: [], loading: true, selectedPiece: null, isChoosingPiece: false};
+        this.state = { selectedPiece: null, isChoosingPiece: false};
 
         this.showPossibleMoves = this.showPossibleMoves.bind(this);
         this.makeMove = this.makeMove.bind(this)
-        this.sendMove = this.sendMove.bind(this)
         this.renderBoard = this.renderBoard.bind(this)
         this.renderMoves = this.renderMoves.bind(this)
         this.renderPieces = this.renderPieces.bind(this)
@@ -35,7 +34,7 @@ class Board extends Component {
         }
 
         if (pieceId != null) {
-            let piece = this.state.pieces.find(({ id }) => id === pieceId)
+            let piece = this.props.pieces.find(({ id }) => id === pieceId)
             this.setState({ selectedPiece: piece, isChoosingPiece: false })
             return;
         }
@@ -46,12 +45,10 @@ class Board extends Component {
         if (isChoosePiece === true) {
             this.setState({ isChoosingPiece: true })
         }
-        else
-            this.sendMove(code);
-    }
-
-    componentDidMount() {
-        this.populatePieces();
+        else {
+            this.showPossibleMoves(this.state.selectedPiece.id)
+            this.props.sendMove(code);
+        }
     }
 
     static renderPiece(piece, isSelected, callback) {
@@ -67,7 +64,7 @@ class Board extends Component {
     renderPieces() {
         return (
             <>{
-                this.state.pieces.map(p =>
+                this.props.pieces.map(p =>
                     Board.renderPiece(p, p === this.state.selectedPiece, this.showPossibleMoves))
             }</>
         )
@@ -116,44 +113,7 @@ class Board extends Component {
     }
 
     render() {
-        let contents = this.state.loading
-            ? <p><em>Loading...</em></p>
-            : this.renderBoard();
-
-        return (
-            <div>
-                {contents}
-            </div>
-        );
-    }
-
-    async sendMove(code) {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(code)
-        };
-
-        const response = await fetch('chess/makemove', requestOptions);
-        const data = await response.json();
-        if (data.isEnd === true) {
-            console.log('end')
-            return;
-        }
-
-        if (data.isCheck === true) {
-            console.log('check')
-        }
-
-        this.showPossibleMoves(this.state.selectedPiece.id);
-
-        this.setState({ pieces: data.pieces });
-    }
-
-    async populatePieces() {
-        const response = await fetch('chess/getpieces');
-        const data = await response.json();
-        this.setState({ pieces: data.pieces, loading: false });
+        return (this.renderBoard());
     }
 }
 

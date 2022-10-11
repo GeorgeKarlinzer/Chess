@@ -42,7 +42,7 @@ namespace Chess.Logic
         {
             if (!IsPaused && !IsStoped)
             {
-                var deltaTime = (int)(lastTimeStamp - DateTime.UtcNow).TotalMilliseconds;
+                var deltaTime = (int)(DateTime.UtcNow - lastTimeStamp).TotalMilliseconds;
                 CurrentTime -= deltaTime - bonus;
 
                 if(CurrentTime <= 0)
@@ -57,6 +57,7 @@ namespace Chess.Logic
         {
             if (IsStoped) return;
 
+            IsPaused = false;
             lastTimeStamp = DateTime.UtcNow;
             currentPlayer = playerSwitch.Switch(currentPlayer);
         }

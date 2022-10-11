@@ -36,7 +36,7 @@ namespace Chess.Logic
         /// </summary>
         public void MakeMove(string moveCode)
         {
-            if (moveCode.Length < 4)
+            if (moveCode.Length < 4 || board.IsEnd)
                 return;
 
             var sourcePosCode = new string(new[] { moveCode[0], moveCode[1] });

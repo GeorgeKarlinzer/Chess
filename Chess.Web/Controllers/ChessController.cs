@@ -11,7 +11,7 @@ namespace Chess.Web.Controllers
     [Route("[controller]")]
     public class ChessController : Controller
     {
-        private static Game game = new();
+        private static Game game = new(3 * 60 * 1000, 2);
         private readonly ILogger<ChessController> _logger;
 
         public ChessController(ILogger<ChessController> logger)
@@ -29,7 +29,9 @@ namespace Chess.Web.Controllers
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
 
-            var json = JsonConvert.SerializeObject(new { pieces = state.pieces, isCheck = state.isCheck, isEnd = state.isEnd }, jsonSettings);
+            var data = new { state.pieces, state.isCheck, state.isEnd, state.remainTime };
+
+            var json = JsonConvert.SerializeObject(data, jsonSettings);
 
             return json;
         }
@@ -43,6 +45,13 @@ namespace Chess.Web.Controllers
             game.MakeMove(moveCode);
 
             return GetPieces();
+        }
+
+        [HttpPost]
+        [Route("~/chess/restart")]
+        public void RestartGame()
+        {
+            game = new(3 * 60 * 1000, 2);
         }
     }
 }
