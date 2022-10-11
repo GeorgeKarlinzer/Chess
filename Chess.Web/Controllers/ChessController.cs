@@ -10,7 +10,7 @@ namespace Chess.Web.Controllers
     [Route("[controller]")]
     public class ChessController : Controller
     {
-        private static Game game = new(3 * 60, 0);
+        private static Game game = GetNewGame();
         private readonly ILogger<ChessController> _logger;
 
         public ChessController(ILogger<ChessController> logger)
@@ -18,10 +18,8 @@ namespace Chess.Web.Controllers
             _logger = logger;
         }
 
-        enum aa
-        {
-            asdas
-        }
+        private static Game GetNewGame() =>
+            new(3 * 60, 2);
 
         [HttpGet]
         [Route("~/chess/getpieces")]
@@ -61,7 +59,7 @@ namespace Chess.Web.Controllers
         [Route("~/chess/restart")]
         public void RestartGame()
         {
-            game = new(3 * 60, 0);
+            game = GetNewGame();
         }
     }
 }
