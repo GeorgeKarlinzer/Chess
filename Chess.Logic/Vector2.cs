@@ -2,10 +2,10 @@
 
 namespace Chess.Logic
 {
-    internal struct Vector2
+    public struct Vector2
     {
-        public int X { get; }
-        public int Y { get; }
+        public int X { get; set; }
+        public int Y { get; set; }
 
         public Vector2(int x, int y)
         {

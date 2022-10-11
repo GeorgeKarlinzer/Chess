@@ -2,7 +2,6 @@
 import ChoosePiece from './ChoosePiece';
 import MoveSquare from './MoveSquare';
 import Piece from './Piece';
-import { toChessPos } from '../Models/Converter'
 
 class Board extends Component {
     static displayName = Board.name;

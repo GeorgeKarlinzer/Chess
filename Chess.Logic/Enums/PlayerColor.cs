@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Chess.Logic
+﻿namespace Chess.Logic
 {
-    internal enum PlayerColor
+    public enum PlayerColor
     {
         White,
         Black

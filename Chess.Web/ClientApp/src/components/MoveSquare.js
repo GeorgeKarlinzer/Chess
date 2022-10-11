@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import styled from 'styled-components';
 import { convertY, toChessPos } from '../Models/Converter'
+import playerColor from '../Models/PlayerColor';
 
 const StyledSquare = styled.div`
     width: 4rem;
@@ -29,7 +30,7 @@ class MoveSquare extends Component {
         const code = sourcePos + targetPos;
         let isChoosePiece = false;
 
-        const promotionY = piece.color === "white" ? 7 : 0;
+        const promotionY = piece.color === playerColor.white ? 7 : 0;
         if (this.props.y === promotionY && piece.name === "pawn") {
             isChoosePiece = true;
         }

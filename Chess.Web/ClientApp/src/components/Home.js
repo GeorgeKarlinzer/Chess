@@ -2,6 +2,7 @@ import React, { Component, useState } from 'react';
 import '../App.css';
 import Board from '../components/Board';
 import Timer from '../components/Timer'
+import playerColor from '../Models/PlayerColor';
 
 export class Home extends Component {
     static displayName = Home.name;
@@ -78,18 +79,12 @@ export class Home extends Component {
     }
 
     handleResponse(data, runTimer) {
-        this.blackTimer.current.correct(data.blackTime);
-        this.whiteTimer.current.correct(data.whiteTime);
-
+        this.blackTimer.current.correct(data.remainTimes[playerColor.black]);
+        this.whiteTimer.current.correct(data.remainTimes[playerColor.white]);
         this.setState({ pieces: data.pieces });
 
-        if (data.currentPlayer == 'White') {
-            this.blackTimer.current.isPaused = false && runTimer;
-            this.whiteTimer.current.isPaused = true && runTimer;
-        }
-        else {
-            this.blackTimer.current.isPaused = true && runTimer;
-            this.whiteTimer.current.isPaused = false && runTimer;
-        }
+        const isWhite = data.currentPlayer === playerColor.white;
+        this.blackTimer.current.isPaused = isWhite || !runTimer || data.isEnd;
+        this.whiteTimer.current.isPaused = !isWhite || !runTimer || data.isEnd;
     }
 }

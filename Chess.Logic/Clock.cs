@@ -38,6 +38,9 @@ namespace Chess.Logic
         public int GetTime(PlayerColor player) =>
             remainTimeMap[player];
 
+        public Dictionary<PlayerColor, int> GetRemainTimes() =>
+            new(remainTimeMap);
+
         public void PressAndPause()
         {
             if (!IsPaused && !IsStoped)

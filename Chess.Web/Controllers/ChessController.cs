@@ -1,5 +1,4 @@
 ﻿using Chess.Logic;
-using Chess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -19,19 +18,30 @@ namespace Chess.Web.Controllers
             _logger = logger;
         }
 
+        enum aa
+        {
+            asdas
+        }
+
         [HttpGet]
         [Route("~/chess/getpieces")]
         public object GetPieces()
         {
-            var (pieces, isCheck, isEnd, blackTime, whiteTime, currentPlayer) = game.GetGameState();
+            var gameState = new GameState()
+            {
+                Pieces = game.Pieces,
+                IsCheck = game.IsCheck,
+                IsEnd = game.IsEnd,
+                CurrentPlayer = game.CurrentPlayer,
+                RemainTimes = game.RemainTimes
+            };
+
             var jsonSettings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
 
-            var data = new { pieces, isCheck, isEnd, blackTime, whiteTime, currentPlayer };
-
-            var json = JsonConvert.SerializeObject(data, jsonSettings);
+            var json = JsonConvert.SerializeObject(gameState, jsonSettings);
 
             return json;
         }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
@@ -39,7 +39,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Chess.Logic\Chess.Logic.csproj" />
-    <ProjectReference Include="..\Chess.Models\Chess.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

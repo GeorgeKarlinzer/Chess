@@ -12,7 +12,6 @@ class Timer extends Component {
     }
 
     correct(milliseconds) {
-        console.log('front: ' + this.formatTime(this.state.milliseconds) + ' back: ' + this.formatTime(milliseconds))
         this.setState({ milliseconds: milliseconds })
     }
 
@@ -28,7 +27,7 @@ class Timer extends Component {
         let delta = 0;
         while (true) {
             await delay(100);
-            if (this.isPaused === true) {
+            if (!this.isPaused) {
                 delta = Date.now() - timeStamp;
                 this.setState({ milliseconds: this.state.milliseconds - delta });
             }

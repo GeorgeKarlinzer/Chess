@@ -1,11 +1,4 @@
-﻿using Chess.Logic.Moves;
-using Chess.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Chess.Logic.Positions;
+﻿using static Chess.Logic.Positions;
 
 namespace Chess.Logic
 {
@@ -14,22 +7,16 @@ namespace Chess.Logic
         private readonly Board board;
         private readonly PlayerSwitch playerSwitch;
 
+        public List<PieceDto> Pieces => board.PiecesMap.Values.Select(x => x.ToDto(board.CurrentPlayer)).ToList();
+        public bool IsCheck => board.IsCheck;
+        public bool IsEnd => board.IsEnd;
+        public PlayerColor CurrentPlayer => board.CurrentPlayer;
+        public Dictionary<PlayerColor, int> RemainTimes => board.Clock.GetRemainTimes();
+
         public Game(int timeSec, int bonusSec)
         {
             playerSwitch = new PlayerSwitch();
             board = new Board(timeSec, bonusSec, playerSwitch);
-        }
-
-        public (List<PieceDto> pieces, bool isCheck, bool isEnd, int blackTime, int whiteTime, string currentPlayer) GetGameState()
-        {
-            var pieces = board.PiecesMap.Values.Select(x => x.ToDto(board.CurrentPlayer)).ToList();
-
-            var isCheck = board.IsCheck;
-            var isEnd = board.IsEnd;
-            var whiteTime = board.Clock.GetTime(PlayerColor.White);
-            var blackTime = board.Clock.GetTime(PlayerColor.Black);
-
-            return (pieces, isCheck, isEnd, blackTime, whiteTime, board.CurrentPlayer.ToString());
         }
 
         /// <summary>

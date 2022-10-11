@@ -1,7 +1,4 @@
-﻿using Chess.Logic;
-using Chess.Logic.Moves;
-using Chess.Logic.Pieces;
-using Chess.Models;
+﻿using Chess.Logic.Pieces;
 
 namespace Chess.Logic
 {
@@ -13,28 +10,15 @@ namespace Chess.Logic
             {
                 Id = piece.Id,
                 Name = piece.GetType().Name.ToLower(),
-                Color = piece.Color.ToString().ToLower(),
-                Position = piece.Position.ToDto(),
-                Moves = new List<PositionDto>()
+                Color = piece.Color,
+                Position = piece.Position,
+                Moves = new List<Vector2>()
             };
 
             if (piece.Color == currentPlayer)
-                dto.Moves = piece.PossibleMoves.Select(x =>
-                    new PositionDto() { X = x.TargetPos.X, Y = x.TargetPos.Y })
-                    .Distinct()
-                    .ToList();
+                dto.Moves = piece.PossibleMoves.Select(x => x.TargetPos).ToList();
 
             return dto;
-        }
-
-        public static PositionDto ToDto(this Vector2 pos)
-        {
-            return new PositionDto() { X = pos.X, Y = pos.Y };
-        }
-
-        public static Vector2 ToVector(this PositionDto pos)
-        {
-            return new Vector2(pos.X, pos.Y);
         }
     }
 }
