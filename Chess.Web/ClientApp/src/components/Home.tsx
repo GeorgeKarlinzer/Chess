@@ -69,7 +69,13 @@ const Home = (props: HomeProps) => {
                 result = data.currentPlayer === playerColor.white ? "0-1" : "1-0";
             }
             else {
-                result = "1/2-1/2"
+                if (data.remainTimes[playerColor.black] == 0) {
+                    result = "1-0";
+                } else if (data.remainTimes[playerColor.white] == 0) {
+                    result = "0-1";
+                }
+                else
+                    result = "1/2-1/2"
             }
         }
 
