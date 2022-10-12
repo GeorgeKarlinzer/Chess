@@ -1,9 +1,11 @@
-﻿export function convertY(y) {
+﻿export function convertY(y: number): number {
     return 7 - y;
 }
 
-export function toChessPos(x, y) {
-    const firstCoordsMap = {
+
+
+export function toChessPos(x: number, y: number): string {
+    let firstCoordsMap = {
         0: 'a',
         1: 'b',
         2: 'c',

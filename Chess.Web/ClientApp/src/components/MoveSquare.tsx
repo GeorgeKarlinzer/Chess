@@ -1,7 +1,9 @@
 ﻿import React, { Component } from 'react';
 import styled from 'styled-components';
 import { convertY, toChessPos } from '../Models/Converter'
+import Piece from '../Models/Piece';
 import playerColor from '../Models/PlayerColor';
+import { MakeMoveFunc } from './Board';
 
 const StyledSquare = styled.div`
     width: 4rem;
@@ -15,38 +17,37 @@ const StyledSquare = styled.div`
     background-position: center;
  `
 
-class MoveSquare extends Component {
+interface MoveSquareProps {
+    x: number,
+    y: number,
+    piece: Piece,
+    makeMove: MakeMoveFunc
+}
 
-    constructor(props) {
-        super(props)
-        this.onClick = this.onClick.bind(this)
-    }
-
-    onClick(e) {
+const MoveSquare = (props: MoveSquareProps) => {
+    function onClick(e) {
         e.stopPropagation();
-        const piece = this.props.piece;
+        const piece = props.piece;
         const sourcePos = toChessPos(piece.position.x, piece.position.y);
-        const targetPos = toChessPos(this.props.x, this.props.y);
+        const targetPos = toChessPos(props.x, props.y);
         const code = sourcePos + targetPos;
         let isChoosePiece = false;
 
         const promotionY = piece.color === playerColor.white ? 7 : 0;
-        if (this.props.y === promotionY && piece.name === "pawn") {
+        if (props.y === promotionY && piece.name === "pawn") {
             isChoosePiece = true;
         }
 
-        this.props.makeMove(code, { x: this.props.x, y: this.props.y }, isChoosePiece);
+        props.makeMove(code, { x: props.x, y: props.y }, isChoosePiece);
     }
 
-    render() {
-        return (
-            <StyledSquare
-                x={this.props.x}
-                y={this.props.y}
-                onClick={(e) => this.onClick(e)} >
-            </StyledSquare>
-        )
-    }
+    return (
+        <StyledSquare
+            x={props.x}
+            y={props.y}
+            onClick={(e) => onClick(e)} >
+        </StyledSquare>
+    )
 }
 
 export default MoveSquare;
