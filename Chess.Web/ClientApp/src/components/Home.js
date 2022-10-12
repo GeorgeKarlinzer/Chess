@@ -12,7 +12,7 @@ export class Home extends Component {
         this.restartGame = this.restartGame.bind(this);
         this.sendMove = this.sendMove.bind(this)
         this.handleResponse = this.handleResponse.bind(this);
-        this.state = { pieces: [] };
+        this.state = { pieces: [], result: "" };
         this.populatePieces();
 
         this.blackTimer = React.createRef();
@@ -43,6 +43,9 @@ export class Home extends Component {
                             <Timer ref={this.blackTimer} />
                             <Timer ref={this.whiteTimer} />
                         </div>
+                        <div className="gameResult">
+                            {this.state.result}
+                        </div>
                     </div>
                 </div>
 
@@ -67,23 +70,32 @@ export class Home extends Component {
         const response = await fetch('chess/makemove', requestOptions);
         const data = await response.json();
 
-        if (data.isEnd === true) {
-            console.log('end')
-        }
-
-        if (data.isCheck === true) {
-            console.log('check')
-        }
 
         this.handleResponse(data, true);
     }
 
     handleResponse(data, runTimer) {
-        this.blackTimer.current.correct(data.remainTimes[playerColor.black]);
-        this.whiteTimer.current.correct(data.remainTimes[playerColor.white]);
-        this.setState({ pieces: data.pieces });
+        let result = "";
+
+        if (data.isEnd == true) {
+            if (data.isCheck == true) {
+                result = data.currentPlayer === playerColor.white ? "0-1" : "1-0";
+            }
+            else {
+                result = "1/2-1/2"
+            }
+        }
+
+        if (data.isEnd == true && data.isCheck != true) {
+            this.setState({ result: "1/2-1/2" })
+        }
+
+
+        this.setState({ pieces: data.pieces, result: result });
 
         const isWhite = data.currentPlayer === playerColor.white;
+        this.blackTimer.current.correct(data.remainTimes[playerColor.black]);
+        this.whiteTimer.current.correct(data.remainTimes[playerColor.white]);
         this.blackTimer.current.isPaused = isWhite || !runTimer || data.isEnd;
         this.whiteTimer.current.isPaused = !isWhite || !runTimer || data.isEnd;
     }
