@@ -9,11 +9,11 @@ export interface SendMoveFunc {
     (code: string): void
 }
 
-interface HomeProps {
+interface Props {
 
 }
 
-interface HomeState {
+interface State {
     pieces: Piece[],
     result: string,
     blackTime: number,
@@ -22,9 +22,9 @@ interface HomeState {
     whiteIsPaused: boolean
 }
 
-const Home = (props: HomeProps) => {
+const Game = (props: Props) => {
 
-    let [state, setState] = useState<HomeState>({
+    let [state, setState] = useState<State>({
         pieces: null,
         result: "",
         blackTime: 0,
@@ -122,4 +122,4 @@ const Home = (props: HomeProps) => {
     }
 }
 
-export default Home
+export default Game

@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\components\Board.tsx" />
+    <None Remove="ClientApp\src\components\Home.tsx" />
     <None Remove="ClientApp\src\components\Piece.tsx" />
     <None Remove="ClientApp\src\index.d.ts" />
     <None Remove="ClientApp\src\Models\Piece.ts" />
@@ -38,10 +39,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="ClientApp\src\App.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ChoosePiece.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\Game.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\Layout.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\MoveSquare.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\NavMenu.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\Timer.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Models\Converter.ts" />
     <TypeScriptCompile Remove="ClientApp\src\Models\PlayerColor.ts" />

@@ -50,7 +50,7 @@ namespace Chess.Web.Controllers
         {
             var moveCode = data.Deserialize<string>();
 
-            game.MakeMove(moveCode);
+            var res = game.TryMakeMove(moveCode);
 
             return GetPieces();
         }

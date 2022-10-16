@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+## Stockfish
+stockfish_15_win_x64_avx2
+
 # User-specific files
 *.rsuser
 *.suo

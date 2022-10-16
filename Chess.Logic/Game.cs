@@ -22,15 +22,15 @@ namespace Chess.Logic
         /// <summary>
         /// Move code in format: {sourcePos}{targetPos}(optional){new piece code} Examples: 1) a3a4 2) c7c8Q
         /// </summary>
-        public void MakeMove(string moveCode)
+        public bool TryMakeMove(string moveCode)
         {
             if (moveCode.Length < 4 || board.IsEnd)
-                return;
+                return false;
 
             var sourcePosCode = new string(new[] { moveCode[0], moveCode[1] });
 
             if (!sourcePosCode.IsValidChessPos())
-                return;
+                return false;
 
             var sourcePos = VectorsMap[sourcePosCode];
             var shortCode = moveCode.Remove(0, 2);
@@ -39,9 +39,11 @@ namespace Chess.Logic
             var move = piece?.PossibleMoves.FirstOrDefault(x => x.Code == shortCode);
 
             if (move is null)
-                return;
+                return false;
 
             board.MakeMove(move);
+
+            return true;
         }
     }
 }
