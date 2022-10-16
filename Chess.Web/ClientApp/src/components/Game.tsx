@@ -1,7 +1,7 @@
-import React, { Component, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import '../App.css';
 import Board from '../components/Board';
-import Timer from '../components/Timer'
+import Timer from '../components/Timer';
 import Piece from '../Models/Piece';
 import playerColor from '../Models/PlayerColor';
 
@@ -15,20 +15,23 @@ interface HomeProps {
 
 interface HomeState {
     pieces: Piece[],
-    result: string
-}
-
-export interface RefTimer {
-    setTime: (milliseconds: number) => void;
-    setIsPause: (value: boolean) => void;
+    result: string,
+    blackTime: number,
+    whiteTime: number,
+    blackIsPaused: boolean,
+    whiteIsPaused: boolean
 }
 
 const Home = (props: HomeProps) => {
 
-    //let whiteTimer = useRef<RefTimer>();
-    //let blackTimer = useRef<RefTimer>();
-
-    let [state, setState] = useState<HomeState>({ pieces: null, result: "" })
+    let [state, setState] = useState<HomeState>({
+        pieces: null,
+        result: "",
+        blackTime: 0,
+        whiteTime: 0,
+        blackIsPaused: true,
+        whiteIsPaused: true
+    })
 
     async function restartGame() {
         const requestOptions = {
@@ -79,18 +82,20 @@ const Home = (props: HomeProps) => {
             }
         }
 
-        if (data.isEnd == true && data.isCheck != true) {
-            setState({ pieces: state.pieces, result: "1/2-1/2" })
-        }
-
-
-        setState({ pieces: data.pieces, result: result });
-
         const isWhite = data.currentPlayer === playerColor.white;
-        //blackTimer.current.setTime(data.remainTimes[playerColor.black]);
-        //whiteTimer.current.setTime(data.remainTimes[playerColor.white]);
-        //blackTimer.current.setIsPause(isWhite || !runTimer || data.isEnd);
-        //whiteTimer.current.setIsPause(!isWhite || !runTimer || data.isEnd);
+        let blackTime = data.remainTimes[playerColor.black]
+        let whiteTime = data.remainTimes[playerColor.white]
+        let blackIsPause = isWhite || !runTimer || data.isEnd
+        let whiteIsPause = !isWhite || !runTimer || data.isEnd
+
+        setState({
+            pieces: data.pieces,
+            result: result,
+            blackTime: blackTime,
+            whiteTime: whiteTime,
+            blackIsPaused: blackIsPause,
+            whiteIsPaused: whiteIsPause
+        });
     }
 
     if (state.pieces == null) {
@@ -103,10 +108,10 @@ const Home = (props: HomeProps) => {
                 <button onClick={restartGame}>Restart</button>
                 <div>
                     <Board pieces={state.pieces} sendMove={sendMove}></Board>
-                    {/*<div className="timerDiv">*/}
-                    {/*    <Timer ref={blackTimer} />*/}
-                    {/*    <Timer ref={whiteTimer} />*/}
-                    {/*</div>*/}
+                    <div className="timerDiv">
+                        <Timer time={state.blackTime} isPaused={state.blackIsPaused} />
+                        <Timer time={state.whiteTime} isPaused={state.whiteIsPaused} />
+                    </div>
                     <div className="gameResult">
                         {state.result}
                     </div>

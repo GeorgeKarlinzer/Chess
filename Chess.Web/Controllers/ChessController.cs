@@ -19,7 +19,7 @@ namespace Chess.Web.Controllers
         }
 
         private static Game GetNewGame() =>
-            new(3 * 60, 2);
+            new(3 * 60, 10);
 
         [HttpGet]
         [Route("~/chess/getpieces")]

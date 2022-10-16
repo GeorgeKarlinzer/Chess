@@ -39,7 +39,8 @@
 
   <ItemGroup>
     <TypeScriptCompile Remove="ClientApp\src\components\ChoosePiece.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\Home.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\Game.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\Layout.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\MoveSquare.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\Timer.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Models\Converter.ts" />

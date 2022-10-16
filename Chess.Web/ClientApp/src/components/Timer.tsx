@@ -1,43 +1,35 @@
-﻿import React, { Component, Ref, useImperativeHandle, useState } from 'react';
-import { RefTimer } from './Home';
+﻿import React, { useEffect, useState } from 'react';
 
+interface TimerProps {
+    isPaused: boolean,
+    time: number
+}
 
-const Timer = (props, ref: Ref<RefTimer>) => {
+const Timer = (props: TimerProps) => {
+    let [time, setTime] = useState(props.time);
+    let [lastSync, setLastSync] = useState(props.time);
 
-    let [time, setTime] = useState(0);
-    let isPaused = false;
-
-    useImperativeHandle(ref, () => ({ setTime: correct, setIsPause: setIsPause }))
-
-    function correct(milliseconds: number) {
-        setTime(milliseconds)
-    }
-
-    function setIsPause(value: boolean) {
-        isPaused = value;
+    if (lastSync != props.time) {
+        setLastSync(props.time)
+        setTime(props.time)
     }
 
     function formatTime(milliseconds: number) {
-        const seconds = (milliseconds / 1000) >> 0;
-        return `${(seconds / 60) >> 0}:${seconds % 60}`;
+        const minutes = (milliseconds / 60000) >> 0;
+        const seconds = ((milliseconds / 1000) >> 0) % 60;
+
+        return `${(minutes / 10 >> 0)}${minutes % 10}:${(seconds / 10) >> 0}${seconds % 10}`;
     }
 
-    async function run() {
-        const delay = ms => new Promise(res => setTimeout(res, ms));
-
-        let timeStamp = Date.now();
-        let delta = 0;
-        while (true) {
-            await delay(100);
-            if (!isPaused) {
-                delta = Date.now() - timeStamp;
-                setTime(time - delta);
-            }
-            timeStamp = Date.now();
+    useEffect(() => {
+        let timer: NodeJS.Timeout
+        if (!props.isPaused) {
+            timer = setTimeout(() => {
+                if (!props.isPaused) setTime(time - 100)
+            }, 100);
         }
-    }
-
-    run()
+        return () => clearTimeout(timer)
+    })
 
     return (
         <div className="timer">{formatTime(time)}</div>

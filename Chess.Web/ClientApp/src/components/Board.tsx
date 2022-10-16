@@ -4,12 +4,11 @@ import ChoosePiece from './ChoosePiece';
 import MoveSquare from './MoveSquare';
 import Piece from '../Models/Piece';
 import PieceComponent from './Piece'
-import { SendMoveFunc } from './Home';
+import { SendMoveFunc } from './Game';
 
 export interface MakeMoveFunc {
     (code: string, move: Vector2, isChoosePiece: boolean): void
 }
-
 
 export interface ClickOnPieceFunc {
     (pieceId: number): void
@@ -36,8 +35,6 @@ export const Board = (props: BoardProps) => {
     }
 
     function clickOnPiece(pieceId: number) {
-        console.log('click on piece')
-
         if (state.selectedPiece != null && pieceId === state.selectedPiece.id) {
             setState({ selectedPiece: null, isChoosingPiece: false })
             return;
