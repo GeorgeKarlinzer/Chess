@@ -1,9 +1,11 @@
 ﻿import React, { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './RegisterStyle.css'
 
 
 const Register = () => {
+
+    const navigate = useNavigate();
 
     let [username, setUsername] = useState("");
     let [email, setEmail] = useState("");
@@ -41,7 +43,6 @@ const Register = () => {
     }
 
     async function tryRegisterUser() {
-        console.log('asd')
         const body = {
             "username": username,
             "email": email,
@@ -55,7 +56,10 @@ const Register = () => {
         };
 
         const response = await fetch('authorization/register', requestOptions);
-        const data = await response.json();
+        const data = await response.text();
+        if (data == "success") {
+            navigate("/authorization/login");
+        }
     }
 
     return (
