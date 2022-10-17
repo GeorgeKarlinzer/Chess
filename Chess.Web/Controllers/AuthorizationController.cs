@@ -17,7 +17,6 @@ namespace Chess.Web.Controllers
         [Route("~/authorization/register")]
         public string Register()
         {
-            Request
             return "register";
         }
 
