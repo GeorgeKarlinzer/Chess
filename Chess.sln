@@ -5,8 +5,6 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chess.Logic", "Chess.Logic\Chess.Logic.csproj", "{6B69DD58-58B9-492C-BFA9-3EFFB5208F2E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chess.DataAccess", "Chess.DataAccess\Chess.DataAccess.csproj", "{6456801F-5231-4A4E-BD80-F6045DA1054B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chess.Web", "Chess.Web\Chess.Web.csproj", "{FA20C1C1-12F3-497A-B30D-1D0F9E55DAD0}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{6B69DD58-58B9-492C-BFA9-3EFFB5208F2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B69DD58-58B9-492C-BFA9-3EFFB5208F2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B69DD58-58B9-492C-BFA9-3EFFB5208F2E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6456801F-5231-4A4E-BD80-F6045DA1054B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6456801F-5231-4A4E-BD80-F6045DA1054B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6456801F-5231-4A4E-BD80-F6045DA1054B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6456801F-5231-4A4E-BD80-F6045DA1054B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA20C1C1-12F3-497A-B30D-1D0F9E55DAD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FA20C1C1-12F3-497A-B30D-1D0F9E55DAD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA20C1C1-12F3-497A-B30D-1D0F9E55DAD0}.Release|Any CPU.ActiveCfg = Release|Any CPU

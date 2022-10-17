@@ -10,5 +10,11 @@ namespace Chess.Logic
         public PlayerColor CurrentPlayer { get; set; }
         [JsonConverter(typeof(DictionaryWithEnumKeyConverter<PlayerColor, int>))]
         public Dictionary<PlayerColor, int> RemainTimes { get; set; }
+
+        public GameState()
+        {
+            Pieces = new();
+            RemainTimes = new();
+        }
     }
 }

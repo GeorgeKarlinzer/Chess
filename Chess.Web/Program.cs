@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,10 @@ app.UseRouting();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "authorization",
+    pattern: "{controller=authorization}/{action=Index}/{id?}");
 
 app.MapFallbackToFile("index.html"); ;
 

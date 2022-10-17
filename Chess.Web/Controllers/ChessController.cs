@@ -1,4 +1,6 @@
 ﻿using Chess.Logic;
+using Chess.Web.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -7,15 +9,17 @@ using System.Text.Json;
 namespace Chess.Web.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class ChessController : Controller
     {
         private static Game game = GetNewGame();
+
         private readonly ILogger<ChessController> _logger;
+        private readonly ChessContext context;
 
         public ChessController(ILogger<ChessController> logger)
         {
             _logger = logger;
+            context = new ChessContext();
         }
 
         private static Game GetNewGame() =>
@@ -25,6 +29,7 @@ namespace Chess.Web.Controllers
         [Route("~/chess/getpieces")]
         public object GetPieces()
         {
+            var a = Request.Path;
             var gameState = new GameState()
             {
                 Pieces = game.Pieces,
