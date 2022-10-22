@@ -1,6 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './RegisterStyle.css'
+import ApplicationPaths from '../../ApplicationPaths';
+import './AccountStyle.css'
 
 
 const Register = () => {
@@ -55,10 +56,10 @@ const Register = () => {
             body: JSON.stringify(body)
         };
 
-        const response = await fetch('authorization/register', requestOptions);
+        const response = await fetch(ApplicationPaths.register, requestOptions);
         const data = await response.text();
         if (data == "success") {
-            navigate("/authorization/login");
+            navigate(ApplicationPaths.login);
         }
     }
 

@@ -6,7 +6,7 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 
 const context =  [
     "/chess",
-    "/authorization"
+    "/account"
 ];
 
 module.exports = function(app) {

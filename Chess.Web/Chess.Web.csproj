@@ -32,8 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\src\components\authorization\Login.tsx" />
-    <None Remove="ClientApp\src\components\authorization\Register.tsx" />
+    <None Remove="ClientApp\src\ApplicationPaths.ts" />
+    <None Remove="ClientApp\src\components\account\AccountManager.ts" />
+    <None Remove="ClientApp\src\components\account\AccountNavMenu.tsx" />
+    <None Remove="ClientApp\src\components\account\Login.tsx" />
+    <None Remove="ClientApp\src\components\account\Logout.tsx" />
+    <None Remove="ClientApp\src\components\account\Register.tsx" />
     <None Remove="ClientApp\src\components\Board.tsx" />
     <None Remove="ClientApp\src\components\Home.tsx" />
     <None Remove="ClientApp\src\components\Piece.tsx" />

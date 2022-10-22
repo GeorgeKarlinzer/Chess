@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
-import { LoginMenu } from './api-authorization/LoginMenu'
+import ApplicationPaths from '../ApplicationPaths';
+import AccountNavMenu from './account/AccountNavMenu';
 
 interface Props {
 
@@ -41,7 +42,7 @@ export class NavMenu extends Component<Props, State> {
                             <NavItem>
                                 <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
                             </NavItem>
-                            <LoginMenu/>
+                            <AccountNavMenu/>
                         </ul>
                     </Collapse>
                 </Navbar>

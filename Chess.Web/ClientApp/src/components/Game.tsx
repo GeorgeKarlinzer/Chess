@@ -100,7 +100,7 @@ const Game = (props: Props) => {
 
     if (state.pieces == null) {
         populatePieces();
-        return (<h1>loading...</h1>)
+        return (<h1>loading game...</h1>)
     }
     else {
         return (

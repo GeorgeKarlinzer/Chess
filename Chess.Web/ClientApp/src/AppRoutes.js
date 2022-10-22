@@ -1,7 +1,8 @@
+import ApplicationPaths from './ApplicationPaths'
+import Login from './components/account/Login'
+import Logout from './components/account/Logout'
+import Register from './components/account/Register'
 import Home from './components/Home'
-import { ApplicationPaths } from './components/api-authorization/ApiAuthorizationConstants';
-import Register from './components/authorization/Register'
-import Login from './components/authorization/Login'
 
 const AppRoutes = [
     {
@@ -9,12 +10,16 @@ const AppRoutes = [
         element: <Home/>
     },
     {
-        path: `${ApplicationPaths.Register}`,
+        path: `${ApplicationPaths.register}`,
         element: <Register/>
     },
     {
-        path: `${ApplicationPaths.Login}`,
+        path: `${ApplicationPaths.login}`,
         element: <Login/>
+    },
+    {
+        path: `~/${ApplicationPaths.logout}`,
+        element: <Logout/>
     }
 ];
 

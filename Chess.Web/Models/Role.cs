@@ -4,6 +4,5 @@ namespace Chess.Web.Models
 {
     public class Role : IdentityRole
     {
-
     }
 }

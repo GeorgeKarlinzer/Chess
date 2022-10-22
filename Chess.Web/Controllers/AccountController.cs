@@ -1,28 +1,46 @@
 ﻿using Chess.Web.Data;
 using Chess.Web.Models;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
+using System.Security.Claims;
 
 namespace Chess.Web.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AuthorizationController : Controller
+    [AllowAnonymous]
+    public class AccountController : Controller
     {
-        private readonly ILogger<AuthorizationController> _logger;
+        private readonly ILogger<AccountController> _logger;
         private readonly ChessContext context;
 
-        public AuthorizationController(ILogger<AuthorizationController> logger)
+        public AccountController(ILogger<AccountController> logger)
         {
             _logger = logger;
             context = new ChessContext();
         }
 
+        [HttpGet]
+        [Route("~/account/issignedin")]
+        public bool IsSignedIn()
+        {
+            return User?.Identity?.IsAuthenticated == true;
+        }
+
         [HttpPost]
-        [Route("~/authorization/register")]
+        [Route("~/account/logout")]
+        public void ChessSignOut()
+        {
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
+        }
+
+        [HttpPost]
+        [Route("~/account/register")]
         public string Register([FromBody] object data)
         {
             try
@@ -60,7 +78,7 @@ namespace Chess.Web.Controllers
                 context.Users.Add(newUser);
                 context.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return "failed";
             }
@@ -70,20 +88,36 @@ namespace Chess.Web.Controllers
 
         [HttpPost]
         [Route("~/account/login")]
-        public string Login([FromBody] object data)
+        public async Task<string> Login([FromBody] Login data)
         {
             try
             {
-                var login = JsonConvert.DeserializeObject<Login>(data.ToString());
+                var user = await context.Users.FirstOrDefaultAsync(x => x.UserName == data.Username);
 
-                if (login is null)
-                    return "failed";
+                if (user is null)
+                    return "Incorrect username or password";
 
-                var signInManager = new SignInManager();
+                var (salt, passwordHash) = (user.PasswordHash[32..], user.PasswordHash[..32]);
+                var enteredPassHash = Encryption.Encryption.GenerateHash(data.Password, salt);
+
+                if (passwordHash != enteredPassHash)
+                    return "Incorrect username or password";
+
+                var claims = new List<Claim>() {
+                    new Claim(ClaimTypes.NameIdentifier, Convert.ToString(user.Id)),
+                        new Claim(ClaimTypes.Name, user.UserName)
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                return "success";
             }
             catch
             {
-
+                return "failed";
             }
         }
     }

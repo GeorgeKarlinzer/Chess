@@ -9,6 +9,7 @@ using System.Text.Json;
 namespace Chess.Web.Controllers
 {
     [ApiController]
+    [Authorize]
     public class ChessController : Controller
     {
         private static Game game = GetNewGame();
@@ -29,7 +30,6 @@ namespace Chess.Web.Controllers
         [Route("~/chess/getpieces")]
         public object GetPieces()
         {
-            var a = Request.Path;
             var gameState = new GameState()
             {
                 Pieces = game.Pieces,
