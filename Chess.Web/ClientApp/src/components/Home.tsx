@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ApplicationPaths from "../ApplicationPaths";
 import { CheckAthentication, IsSignedIn } from "./account/AccountManager";
@@ -8,11 +8,13 @@ const Home = () => {
     const navigate = useNavigate();
     let [isLoading, setIsLoading] = useState(true);
 
-    if (isLoading)
+    useEffect(() => {
         CheckAthentication()
             .then(() => {
                 setIsLoading(false);
-            });
+            })
+    });
+
     if (isLoading)
         return (<h1>Loading...</h1>)
     else if (IsSignedIn())

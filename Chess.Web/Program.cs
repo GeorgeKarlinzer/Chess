@@ -1,3 +1,4 @@
+using Chess.Web.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json.Serialization;
@@ -14,6 +15,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = new PathString("/Account/Login");
     });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,6 +26,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseWebSockets();
+app.UseCors(b =>
+{
+    b.WithOrigins("https://localhost:44443")
+        .AllowAnyHeader()
+        .WithMethods("POST", "GET")
+        .AllowCredentials();
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -39,6 +50,7 @@ app.MapControllerRoute(
     name: "authorization",
     pattern: "{controller=authorization}/{action=Index}/{id?}");
 
-app.MapFallbackToFile("index.html"); ;
+app.MapFallbackToFile("index.html");
+app.MapHub<ChessHub>("/chessHub");
 
 app.Run();

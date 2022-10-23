@@ -13,5 +13,8 @@ namespace Chess.Logic
 
         public PlayerColor SwitchBack(PlayerColor color) =>
             Switch(color);
+
+        public IEnumerable<PlayerColor> GetColors() =>
+            new[] { PlayerColor.White, PlayerColor.Black };
     }
 }

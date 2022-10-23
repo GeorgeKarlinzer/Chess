@@ -1,18 +1,18 @@
-﻿using System.Runtime.InteropServices;
+﻿using Chess.Logic.Dtos;
 
 namespace Chess.Logic
 {
     internal class Clock
     {
-        private Dictionary<PlayerColor, int> remainTimeMap;
-        private DateTime lastTimeStamp;
+        private readonly Dictionary<PlayerColor, int> remainTimeMap;
+        private readonly IPlayerSwitch playerSwitch;
+        private readonly int bonus;
 
-        private IPlayerSwitch playerSwitch;
+        private DateTime lastTimeStamp;
         private PlayerColor currentPlayer;
-        public bool IsStoped { get; private set; }
+        public bool IsStopped { get; private set; }
         public bool IsPaused { get; private set; }
 
-        private readonly int bonus;
 
         private int CurrentTime
         {
@@ -28,7 +28,7 @@ namespace Chess.Logic
                 [PlayerColor.Black] = timeSec * 1000
             };
             currentPlayer = PlayerColor.White;
-            IsStoped = false;
+            IsStopped = false;
             IsPaused = true;
 
             bonus = bonusSec * 1000;
@@ -38,27 +38,35 @@ namespace Chess.Logic
         public int GetTime(PlayerColor player) =>
             remainTimeMap[player];
 
-        public Dictionary<PlayerColor, int> GetRemainTimes() =>
-            new(remainTimeMap);
+        public Dictionary<PlayerColor, TimerDto> GetTimersMap()
+        {
+            var timersMap = new Dictionary<PlayerColor, TimerDto>();
+
+            foreach (var color in playerSwitch.GetColors())
+                timersMap[color] = new(remainTimeMap[color], currentPlayer == color && !IsStopped);
+
+            return timersMap;
+        }
 
         public void PressAndPause()
         {
-            if (!IsPaused && !IsStoped)
+            if (!IsPaused && !IsStopped)
             {
                 var deltaTime = (int)(DateTime.UtcNow - lastTimeStamp).TotalMilliseconds;
                 CurrentTime -= deltaTime - bonus;
 
-                if(CurrentTime <= 0)
+                if (CurrentTime <= 0)
                 {
                     CurrentTime = 0;
-                    IsStoped = true;
+                    IsStopped = true;
                 }
+                IsPaused = true;
             }
         }
 
         public void StartForNextPlayer()
         {
-            if (IsStoped) return;
+            if (IsStopped) return;
 
             IsPaused = false;
             lastTimeStamp = DateTime.UtcNow;
@@ -66,6 +74,6 @@ namespace Chess.Logic
         }
 
         public void Stop() =>
-            IsStoped = true;
+            IsStopped = true;
     }
 }

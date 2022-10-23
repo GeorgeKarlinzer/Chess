@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="6.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.10" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.8.4">
@@ -39,9 +40,11 @@
     <None Remove="ClientApp\src\components\account\Logout.tsx" />
     <None Remove="ClientApp\src\components\account\Register.tsx" />
     <None Remove="ClientApp\src\components\Board.tsx" />
+    <None Remove="ClientApp\src\components\GameMenu.tsx" />
     <None Remove="ClientApp\src\components\Home.tsx" />
     <None Remove="ClientApp\src\components\Piece.tsx" />
     <None Remove="ClientApp\src\index.d.ts" />
+    <None Remove="ClientApp\src\Models\GameStatus.ts" />
     <None Remove="ClientApp\src\Models\Piece.ts" />
     <None Remove="ClientApp\src\Models\Vector2.ts" />
   </ItemGroup>

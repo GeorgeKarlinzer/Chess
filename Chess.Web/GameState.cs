@@ -1,20 +1,24 @@
-﻿using Newtonsoft.Json;
+﻿using Chess.Logic.Dtos;
+using Newtonsoft.Json;
 
 namespace Chess.Logic
 {
     public class GameState
     {
-        public List<PieceDto> Pieces { get; set; }
-        public bool IsCheck { get; set; }
-        public bool IsEnd { get; set; }
-        public PlayerColor CurrentPlayer { get; set; }
-        [JsonConverter(typeof(DictionaryWithEnumKeyConverter<PlayerColor, int>))]
-        public Dictionary<PlayerColor, int> RemainTimes { get; set; }
+        public List<PieceDto> Pieces { get; }
+        public bool IsCheck { get; }
+        public GameStatus Status { get; }
+        public PlayerColor CurrentPlayer { get; }
+        [JsonConverter(typeof(DictionaryWithEnumKeyConverter<PlayerColor, TimerDto>))]
+        public Dictionary<PlayerColor, TimerDto> TimersMap { get; }
 
-        public GameState()
+        public GameState(Game game, PlayerColor requester)
         {
-            Pieces = new();
-            RemainTimes = new();
+            Pieces = game.GetPieces(requester);
+            IsCheck = game.IsCheck;
+            Status = game.Status;
+            CurrentPlayer = game.CurrentPlayer;
+            TimersMap = game.TimersMap;
         }
     }
 }

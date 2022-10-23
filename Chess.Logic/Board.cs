@@ -17,21 +17,21 @@ using System.Xml.Serialization;
 namespace Chess.Logic
 {
     // TODO: Threefold repetition (en passant and castle)
+    // TODO: No time with no pieces to mate opp
     internal class Board
     {
         public Clock Clock { get; }
 
         private int currentPieceId;
-        private Dictionary<string, int> repeatPositionMap;
-        private IPlayerSwitch playerSwitch;
+        private readonly Dictionary<string, int> repeatPositionMap;
+        private readonly IPlayerSwitch playerSwitch;
 
         public PlayerColor CurrentPlayer { get; private set; }
-
+        public GameStatus Status { get; private set; }
         public List<Move> Moves { get; }
         public Dictionary<Vector2, Piece> PiecesMap { get; }
 
         public bool IsCheck { get; private set; }
-        public bool IsEnd { get; private set; }
 
         public Board(int time, int bonus, IPlayerSwitch playerSwitch)
         {
@@ -46,6 +46,31 @@ namespace Chess.Logic
             GeneratePieces();
 
             CalculateAvailibleMoves();
+        }
+
+        private GameStatus GetStatus()
+        {
+            var hasMoves = PiecesMap.Values.Where(x => x.Color == CurrentPlayer)
+                        .Any(x => x.PossibleMoves.Count > 0);
+
+            if (IsCheck && !hasMoves)
+            {
+                if (CurrentPlayer == White)
+                    return GameStatus.WhitesWon;
+                else
+                    return GameStatus.BlacksWon;
+            }
+
+            if (!hasMoves || repeatPositionMap.Any(x => x.Value == 3) || repeatPositionMap.Count == 100)
+                return GameStatus.Draw;
+
+            if (Clock.GetTime(White) == 0)
+                return GameStatus.BlacksWon;
+
+            if (Clock.GetTime(Black) == 0)
+                return GameStatus.WhitesWon;
+
+            return GameStatus.InProgress;
         }
 
         public void MovePiece(Piece piece, Vector2 targetPos, Piece attackedPiece = null)
@@ -74,13 +99,9 @@ namespace Chess.Logic
             CalculateAvailibleMoves();
             CalculateFenCode();
 
-            IsEnd = !PiecesMap.Values.Where(x => x.Color == CurrentPlayer)
-                        .Any(x => x.PossibleMoves.Count > 0)
-                    || repeatPositionMap.Any(x => x.Value == 3)
-                    || repeatPositionMap.Count == 100
-                    || Clock.GetTime(playerSwitch.SwitchBack(CurrentPlayer)) == 0;
-
-            Clock.StartForNextPlayer();
+            Status = GetStatus();
+            if (Status != GameStatus.InProgress)
+                Clock.Stop();
         }
 
         public void CalculateFenCode()
@@ -209,7 +230,6 @@ namespace Chess.Logic
                         .Foreach(x => piece.PossibleMoves.Remove(x));
                 }
             }
-
         }
 
         public bool CanMove(Vector2 targetPos)

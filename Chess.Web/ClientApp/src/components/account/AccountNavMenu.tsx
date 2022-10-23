@@ -5,8 +5,6 @@ import ApplicationPaths from '../../ApplicationPaths';
 import { IsSignedIn } from './AccountManager';
 
 const AccountNavMenu = () => {
-    console.log('render account nav menu')
-
     if (!IsSignedIn())
         return (
             <>

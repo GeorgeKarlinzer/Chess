@@ -1,4 +1,5 @@
-﻿using static Chess.Logic.Positions;
+﻿using Chess.Logic.Dtos;
+using static Chess.Logic.Positions;
 
 namespace Chess.Logic
 {
@@ -7,11 +8,10 @@ namespace Chess.Logic
         private readonly Board board;
         private readonly PlayerSwitch playerSwitch;
 
-        public List<PieceDto> Pieces => board.PiecesMap.Values.Select(x => x.ToDto(board.CurrentPlayer)).ToList();
         public bool IsCheck => board.IsCheck;
-        public bool IsEnd => board.IsEnd;
+        public GameStatus Status => board.Status;
         public PlayerColor CurrentPlayer => board.CurrentPlayer;
-        public Dictionary<PlayerColor, int> RemainTimes => board.Clock.GetRemainTimes();
+        public Dictionary<PlayerColor, TimerDto> TimersMap => board.Clock.GetTimersMap();
 
         public Game(int timeSec, int bonusSec)
         {
@@ -19,12 +19,17 @@ namespace Chess.Logic
             board = new Board(timeSec, bonusSec, playerSwitch);
         }
 
+        public List<PieceDto> GetPieces(PlayerColor requester)
+        {
+            return board.PiecesMap.Values.Select(x => x.ToDto(requester, board.CurrentPlayer)).ToList();
+        }
+
         /// <summary>
         /// Move code in format: {sourcePos}{targetPos}(optional){new piece code} Examples: 1) a3a4 2) c7c8Q
         /// </summary>
         public bool TryMakeMove(string moveCode)
         {
-            if (moveCode.Length < 4 || board.IsEnd)
+            if (moveCode.Length < 4 || board.Status != GameStatus.InProgress)
                 return false;
 
             var sourcePosCode = new string(new[] { moveCode[0], moveCode[1] });

@@ -4,5 +4,6 @@
     {
         PlayerColor Switch(PlayerColor color);
         PlayerColor SwitchBack(PlayerColor color);
+        IEnumerable<PlayerColor> GetColors();
     }
 }

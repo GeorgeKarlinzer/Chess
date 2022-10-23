@@ -59,7 +59,7 @@ const Register = () => {
         const response = await fetch(ApplicationPaths.register, requestOptions);
         const data = await response.text();
         if (data == "success") {
-            navigate(ApplicationPaths.login);
+            navigate('/' + ApplicationPaths.login);
         }
     }
 

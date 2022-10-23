@@ -26,7 +26,7 @@ namespace Chess.Web.Controllers
         }
 
         [HttpGet]
-        [Route("~/account/issignedin")]
+        [Route("~/account/isloggedin")]
         public bool IsSignedIn()
         {
             return User?.Identity?.IsAuthenticated == true;
@@ -45,7 +45,7 @@ namespace Chess.Web.Controllers
         {
             try
             {
-                var registration = JsonConvert.DeserializeObject<Registration>(data.ToString());
+                var registration = JsonConvert.DeserializeObject<Registration>(data.ToString()!);
 
                 if (registration is null)
                     return "failed";
@@ -80,6 +80,7 @@ namespace Chess.Web.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
                 return "failed";
             }
 

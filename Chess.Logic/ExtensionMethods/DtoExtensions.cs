@@ -4,7 +4,7 @@ namespace Chess.Logic
 {
     internal static class DtoExtensions
     {
-        public static PieceDto ToDto(this Piece piece, PlayerColor currentPlayer)
+        public static PieceDto ToDto(this Piece piece, PlayerColor requester, PlayerColor currentPlayer)
         {
             var dto = new PieceDto()
             {
@@ -15,7 +15,7 @@ namespace Chess.Logic
                 Moves = new List<Vector2>()
             };
 
-            if (piece.Color == currentPlayer)
+            if (piece.Color == currentPlayer && currentPlayer == requester)
                 dto.Moves = piece.PossibleMoves.Select(x => x.TargetPos).ToList();
 
             return dto;

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../App.css';
 import Board from '../components/Board';
 import Timer from '../components/Timer';
 import Piece from '../Models/Piece';
 import playerColor from '../Models/PlayerColor';
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
+import ApplicationPaths from '../ApplicationPaths';
+import gameStatus from '../Models/GameStatus';
 
 export interface SendMoveFunc {
     (code: string): void
@@ -13,113 +16,105 @@ interface Props {
 
 }
 
-interface State {
+interface TimerDto {
+    remainMilliseconds: number,
+    isRunning: boolean
+}
+
+interface GameState {
     pieces: Piece[],
-    result: string,
-    blackTime: number,
-    whiteTime: number,
-    blackIsPaused: boolean,
-    whiteIsPaused: boolean
+    isCheck: boolean,
+    status: gameStatus
+    currentPlayer: number,
+    timersMap: { [key in playerColor]: TimerDto }
 }
 
 const Game = (props: Props) => {
 
-    let [state, setState] = useState<State>({
-        pieces: null,
-        result: "",
-        blackTime: 0,
-        whiteTime: 0,
-        blackIsPaused: true,
-        whiteIsPaused: true
-    })
+    let [connection, setConnection] = useState<HubConnection>(null);
+    let [isInGame, setIsInGame] = useState(false);
+    let [color, setColor] = useState<playerColor>(null)
+    let [gameState, setGameState] = useState<GameState>(null)
+    console.log(isInGame)
 
-    async function restartGame() {
-        const requestOptions = {
-            method: 'POST',
+    useEffect(() => {
+        const newConnection = new HubConnectionBuilder()
+            .withUrl('https://localhost:7130/chesshub')
+            .withAutomaticReconnect()
+            .build();
+
+        setConnection(newConnection);
+    }, []);
+
+    useEffect(() => {
+        if (connection) {
+            connection.start()
+                .then(() => {
+                    connection.on('UpdateBoard', x => {
+                        setGameState(x)
+                    });
+                    connection.on('StartGame', color => {
+                        setColor(color);
+                        setIsInGame(true);
+                        getGameState();
+                    })
+                })
+                .catch(e => console.log('Connection failed: ', e));
+        }
+    }, [connection]);
+
+    async function getGameState() {
+        var response = await fetch(ApplicationPaths.getGameState, { method: "POST" });
+        var data = await response.json();
+        setGameState(data);
+    }
+
+    async function searchGame() {
+        const options = {
             headers: { 'Content-Type': 'application/json' },
-        };
+            method: "POST"
+        }
+        let response = await fetch("chess/searchgame", options);
 
-        await fetch('chess/restart', requestOptions);
-        populatePieces();
+        let data = await response.text();
+
+        if (data == 'true')
+            console.log('searching');
+        else
+            console.log('cannot search');
     }
 
-    async function populatePieces() {
-        const response = await fetch('chess/getpieces');
-        const data = await response.json();
-
-        handleResponse(data, false);
-    }
-
-    async function sendMove(code) {
+    function sendMove(code) {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(code)
         };
 
-        const response = await fetch('chess/makemove', requestOptions);
-        const data = await response.json();
-
-
-        handleResponse(data, true);
+        fetch('chess/makemove', requestOptions);
     }
 
-    function handleResponse(data, runTimer) {
-        let result = "";
+    if (!isInGame)
+        return (<button onClick={searchGame}>Search game</button>)
 
-        if (data.isEnd == true) {
-            if (data.isCheck == true) {
-                result = data.currentPlayer === playerColor.white ? "0-1" : "1-0";
-            }
-            else {
-                if (data.remainTimes[playerColor.black] == 0) {
-                    result = "1-0";
-                } else if (data.remainTimes[playerColor.white] == 0) {
-                    result = "0-1";
-                }
-                else
-                    result = "1/2-1/2"
-            }
-        }
+    if (gameState == null)
+        return (<h1>Loading...</h1>)
 
-        const isWhite = data.currentPlayer === playerColor.white;
-        let blackTime = data.remainTimes[playerColor.black]
-        let whiteTime = data.remainTimes[playerColor.white]
-        let blackIsPause = isWhite || !runTimer || data.isEnd
-        let whiteIsPause = !isWhite || !runTimer || data.isEnd
-
-        setState({
-            pieces: data.pieces,
-            result: result,
-            blackTime: blackTime,
-            whiteTime: whiteTime,
-            blackIsPaused: blackIsPause,
-            whiteIsPaused: whiteIsPause
-        });
-    }
-
-    if (state.pieces == null) {
-        populatePieces();
-        return (<h1>loading game...</h1>)
-    }
-    else {
-        return (
+    return (
+        <div>
             <div>
-                <button onClick={restartGame}>Restart</button>
-                <div>
-                    <Board pieces={state.pieces} sendMove={sendMove}></Board>
-                    <div className="timerDiv">
-                        <Timer time={state.blackTime} isPaused={state.blackIsPaused} />
-                        <Timer time={state.whiteTime} isPaused={state.whiteIsPaused} />
-                    </div>
-                    <div className="gameResult">
-                        {state.result}
-                    </div>
+                <Board pieces={gameState.pieces} sendMove={sendMove}></Board>
+                <div className="timerDiv">
+                    <Timer time={gameState.timersMap[playerColor.black].remainMilliseconds} isPaused={!gameState.timersMap[playerColor.black].isRunning} />
+                    <Timer time={gameState.timersMap[playerColor.white].remainMilliseconds} isPaused={!gameState.timersMap[playerColor.white].isRunning} />
+                </div>
+                <div className="gameResult">
+                    {gameState.status}
                 </div>
             </div>
+        </div>
 
-        );
-    }
+    );
 }
 
 export default Game

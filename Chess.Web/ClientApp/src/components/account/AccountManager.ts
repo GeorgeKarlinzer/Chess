@@ -4,7 +4,7 @@ let isSignedIn = false;
 
 
 export async function CheckAthentication() {
-    var responce = await fetch(ApplicationPaths.isSignedIn);
+    var responce = await fetch(ApplicationPaths.isLoggedIn);
     var data = await responce.text();
     isSignedIn = data == 'true';
 }

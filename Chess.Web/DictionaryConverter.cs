@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Chess.Logic
 {
-    public class DictionaryWithEnumKeyConverter<T, U> : JsonConverter where T : Enum
+    public class DictionaryWithEnumKeyConverter<T, U> : JsonConverter where T : Enum where U : class
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
