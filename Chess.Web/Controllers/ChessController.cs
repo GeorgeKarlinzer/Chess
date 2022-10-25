@@ -93,14 +93,7 @@ namespace Chess.Web.Controllers
 
             var gameState = new GameState(match.Game, match.GetColor(CurrentUser));
 
-            var jsonSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-
-            var json = JsonConvert.SerializeObject(gameState, jsonSettings);
-
-            return json;
+            return ToJson(gameState);
         }
 
         [HttpPost]
@@ -127,10 +120,22 @@ namespace Chess.Web.Controllers
             foreach (var player in match.Players)
             {
                 var userId = GetUserId(player.Username);
-                hubContext.Clients.User(userId).UpdateBoard(new(match.Game, player.Color));
+                var json = ToJson(new GameState(match.Game, player.Color));
+                hubContext.Clients.User(userId).UpdateBoard(json);
             }
 
             return string.Empty;
+        }
+
+        private static string ToJson(object obj)
+        {
+            var jsonSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+
+            var json = JsonConvert.SerializeObject(obj, jsonSettings);
+            return json;
         }
 
         private string GetUserId(string username) =>

@@ -4,10 +4,10 @@ namespace Chess.Web.Hubs
 {
     public interface IChessClient
     {
-        Task UpdateBoard(GameState gameState);
+        Task UpdateBoard(string gameStateJson);
 
         Task StartGame(PlayerColor color);
 
-        Task EndGame(GameState gameState);
+        Task EndGame(string gameStateJson);
     }
 }

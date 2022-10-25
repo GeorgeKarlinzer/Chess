@@ -7,6 +7,7 @@ import playerColor from '../Models/PlayerColor';
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 import ApplicationPaths from '../ApplicationPaths';
 import gameStatus from '../Models/GameStatus';
+import { setConverterColor } from '../Models/Converter';
 
 export interface SendMoveFunc {
     (code: string): void
@@ -35,7 +36,6 @@ const Game = (props: Props) => {
     let [isInGame, setIsInGame] = useState(false);
     let [color, setColor] = useState<playerColor>(null)
     let [gameState, setGameState] = useState<GameState>(null)
-    console.log(isInGame)
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
@@ -51,10 +51,11 @@ const Game = (props: Props) => {
             connection.start()
                 .then(() => {
                     connection.on('UpdateBoard', x => {
-                        setGameState(x)
+                        setGameState(JSON.parse(x))
                     });
                     connection.on('StartGame', color => {
                         setColor(color);
+                        setConverterColor(color);
                         setIsInGame(true);
                         getGameState();
                     })
@@ -100,17 +101,28 @@ const Game = (props: Props) => {
     if (gameState == null)
         return (<h1>Loading...</h1>)
 
+    let timer;
+
+    if (color == playerColor.white)
+        timer = (
+            <div className="timerDiv">
+                <Timer time={gameState.timersMap[playerColor.black].remainMilliseconds} isPaused={!gameState.timersMap[playerColor.black].isRunning} />
+                <Timer time={gameState.timersMap[playerColor.white].remainMilliseconds} isPaused={!gameState.timersMap[playerColor.white].isRunning} />
+            </div>
+        )
+    else
+        timer = (
+            <div className="timerDiv">
+                <Timer time={gameState.timersMap[playerColor.white].remainMilliseconds} isPaused={!gameState.timersMap[playerColor.white].isRunning} />
+                <Timer time={gameState.timersMap[playerColor.black].remainMilliseconds} isPaused={!gameState.timersMap[playerColor.black].isRunning} />
+            </div>
+        )
+    console.log(gameState.timersMap);
     return (
         <div>
             <div>
                 <Board pieces={gameState.pieces} sendMove={sendMove}></Board>
-                <div className="timerDiv">
-                    <Timer time={gameState.timersMap[playerColor.black].remainMilliseconds} isPaused={!gameState.timersMap[playerColor.black].isRunning} />
-                    <Timer time={gameState.timersMap[playerColor.white].remainMilliseconds} isPaused={!gameState.timersMap[playerColor.white].isRunning} />
-                </div>
-                <div className="gameResult">
-                    {gameState.status}
-                </div>
+                {timer}
             </div>
         </div>
 

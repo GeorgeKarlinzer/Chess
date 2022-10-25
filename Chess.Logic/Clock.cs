@@ -43,14 +43,16 @@ namespace Chess.Logic
             var timersMap = new Dictionary<PlayerColor, TimerDto>();
 
             foreach (var color in playerSwitch.GetColors())
-                timersMap[color] = new(remainTimeMap[color], currentPlayer == color && !IsStopped);
+                timersMap[color] = new(remainTimeMap[color], currentPlayer == color && !IsPaused && !IsStopped);
 
             return timersMap;
         }
 
-        public void PressAndPause()
+        public void Press()
         {
-            if (!IsPaused && !IsStopped)
+            if (IsStopped) return;
+
+            if (!IsPaused)
             {
                 var deltaTime = (int)(DateTime.UtcNow - lastTimeStamp).TotalMilliseconds;
                 CurrentTime -= deltaTime - bonus;
@@ -60,13 +62,7 @@ namespace Chess.Logic
                     CurrentTime = 0;
                     IsStopped = true;
                 }
-                IsPaused = true;
             }
-        }
-
-        public void StartForNextPlayer()
-        {
-            if (IsStopped) return;
 
             IsPaused = false;
             lastTimeStamp = DateTime.UtcNow;

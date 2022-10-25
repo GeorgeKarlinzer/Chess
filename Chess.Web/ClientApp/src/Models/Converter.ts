@@ -1,8 +1,14 @@
-﻿export function convertY(y: number): number {
-    return 7 - y;
+﻿import playerColor from "./PlayerColor";
+
+export function setConverterColor(c: playerColor): void {
+    color = c;
 }
 
+var color = playerColor.white;
 
+export function convertY(y: number): number {
+    return color == playerColor.white ? 7 - y : y;
+}
 
 export function toChessPos(x: number, y: number): string {
     let firstCoordsMap = {

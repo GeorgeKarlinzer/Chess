@@ -43,6 +43,8 @@ namespace Chess.Logic
             this.playerSwitch = playerSwitch;
             Clock = new Clock(time, bonus, playerSwitch);
 
+            Status = GameStatus.InProgress;
+
             GeneratePieces();
 
             CalculateAvailibleMoves();
@@ -91,7 +93,7 @@ namespace Chess.Logic
 
         public void MakeMove(Move move)
         {
-            Clock.PressAndPause();
+            Clock.Press();
             CurrentPlayer = playerSwitch.Switch(CurrentPlayer);
 
             move.MakeMove();
