@@ -48,7 +48,7 @@ namespace Chess.Web.Controllers
             {
                 var game = new Game(10, 0);
                 var match = new Match(usersQueue[1], usersQueue[0], game);
-                game.TimedOut += () => SendGameState(match);
+                game.OnGameEnd += () => SendGameState(match);
                 matches.Add(match);
 
                 foreach (var player in match.Players)
@@ -67,73 +67,78 @@ namespace Chess.Web.Controllers
         [Route("~/chess/offerdraw")]
         public bool OfferDraw()
         {
+            throw new NotImplementedException();
+        }
 
+        [HttpPost]
+        [Route("~/chess/closegame")]
+        public void CloseGame()
+        {
+            var match = GetMatch();
+            if (match is null)
+                return;
 
-            return true;
+            var player = match.Players.First(x => x.Username == CurrentUser);
+
+            match.Players.Remove(player);
         }
 
         [HttpPost]
         [Route("~/chess/resign")]
         public bool Resign()
         {
+            var match = GetMatch();
+            if (match is null)
+                return false;
 
-
+            match.Game.Resign(match.GetColor(CurrentUser));
             return true;
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("~/chess/getgamestate")]
         public string GetGameState()
         {
-            var match = matches.FirstOrDefault(x => x.ContainsUser(CurrentUser));
+            var match = GetMatch();
             if (match is null)
-                return string.Empty;
+                return new object().ToJson();
 
             var gameState = new GameState(match.Game, match.GetColor(CurrentUser));
-
-            return ToJson(gameState);
+            return gameState.ToJson();
         }
 
         [HttpPost]
         [Route("~/chess/makemove")]
-        public string MakeMove([FromBody] JsonElement data)
+        public bool MakeMove([FromBody] JsonElement data)
         {
             var moveCode = data.Deserialize<string>();
 
-            var match = matches.FirstOrDefault(x => x.ContainsUser(CurrentUser));
+            var match = GetMatch();
 
             if (match is null)
-                return "Current user doesn't participate in any game";
+                return false;
 
             var isValidMove = match.Game.TryMakeMove(moveCode);
-            
+
             if (!isValidMove)
-                return "Invalid move";
+                return false;
 
             SendGameState(match);
 
-            return string.Empty;
+            return true;
         }
+
+        private Match? GetMatch() =>
+            matches.FirstOrDefault(x => x.ContainsUser(CurrentUser));
 
         private void SendGameState(Match match)
         {
             foreach (var player in match.Players)
             {
                 var userId = GetUserId(player.Username);
-                var json = ToJson(new GameState(match.Game, player.Color));
+                var json = new GameState(match.Game, player.Color).ToJson();
                 hubContext.Clients.User(userId).UpdateBoard(json);
             }
-        }
-
-        private static string ToJson(object obj)
-        {
-            var jsonSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-
-            var json = JsonConvert.SerializeObject(obj, jsonSettings);
-            return json;
         }
 
         private string GetUserId(string username) =>

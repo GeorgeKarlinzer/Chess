@@ -57,10 +57,12 @@ const Register = () => {
         };
 
         const response = await fetch(ApplicationPaths.register, requestOptions);
-        const data = await response.text();
-        if (data == "success") {
-            navigate('/' + ApplicationPaths.login);
-        }
+        const data = await response.json();
+
+        if (Object.keys(data).length === 0)
+            navigate(ApplicationPaths.loginRoute);
+        else
+            setErrors(data);
     }
 
     return (
@@ -79,6 +81,7 @@ const Register = () => {
                 <div className="password">
                     <label className="form__label" htmlFor="password">Password </label>
                     <input className="form__input" type="password" id="password" value={password} onChange={e => onChange(e)} placeholder="Password" />
+                    <span className="error">{errors["password"]}</span>
                 </div>
                 <div className="confirm-password">
                     <label className="form__label" htmlFor="password2">Confirm Password </label>

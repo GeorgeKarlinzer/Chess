@@ -42,27 +42,35 @@ namespace Chess.Web.Controllers
         [Route("~/account/register")]
         public string Register([FromBody] object data)
         {
+            var errors = new Dictionary<string, string>();
+
             try
             {
                 var registration = JsonConvert.DeserializeObject<Registration>(data.ToString()!);
 
                 if (registration is null)
-                    return "failed";
+                    errors["username"] = "data cannot be empty";
 
-                if (context.Users.Any(x => x.NormalizedEmail == registration.Email.ToLower()))
-                    return "failed";
+                if (context.Users.Any(x => x.NormalizedEmail == registration!.Email.ToLower()))
+                    errors["email"] = "email is already taken";
 
-                if (string.IsNullOrWhiteSpace(registration.Password))
-                    return "failed";
+                if (string.IsNullOrWhiteSpace(registration!.Password))
+                    errors["password"] = "password cannot be empty";
 
                 if (!new EmailAddressAttribute().IsValid(registration.Email))
-                    return "failed";
+                    errors["email"] = "email address is not valid";
 
-                if (context.Users.Any(x => x.NormalizedEmail == registration.Email.ToLower()))
-                    return "failed";
+                if (context.Users.Any(x => x.UserName == registration.Username.ToLower()))
+                    errors["username"] = "Username is already taken";
+
+                if (string.IsNullOrWhiteSpace(registration.Username))
+                    errors["username"] = "username cannot be empty";
+
+                if (errors.Count > 0)
+                    return errors.ToJson();
 
                 var salt = Encryption.Encryption.GenerateSalt();
-                var hash = Encryption.Encryption.GenerateHash(registration.Password, salt);
+                var hash = Encryption.Encryption.GenerateHash(registration!.Password, salt);
                 var passwordHash = $"{hash}{salt}";
 
                 var newUser = new User()
@@ -76,14 +84,14 @@ namespace Chess.Web.Controllers
 
                 context.Users.Add(newUser);
                 context.SaveChanges();
+                return errors.ToJson();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return "failed";
+                errors["username"] = "Error during registration, please try again later";
+                return errors.ToJson();
             }
-
-            return "success";
         }
 
         [HttpPost]
@@ -113,11 +121,11 @@ namespace Chess.Web.Controllers
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                return "success";
+                return "";
             }
             catch
             {
-                return "failed";
+                return "Server error occured, please try later";
             }
         }
     }

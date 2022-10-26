@@ -9,6 +9,7 @@ const Login = () => {
 
     let [username, setUsername] = useState("");
     let [password, setPassword] = useState("");
+    let [error, setError] = useState("");
 
     let states = {
         ["username"]: setUsername,
@@ -40,16 +41,22 @@ const Login = () => {
 
         const response = await fetch(ApplicationPaths.login, requestOptions);
         const data = await response.text();
-        if (data == "success") {
+
+        if (data === "") {
             SetSignIn(true);
             navigate("/");
             window.location.reload();
         }
+        else
+            setError(data);
     }
+
+    const errorTbx = error === "" ? (<></>) : (<span className="error">{error}</span>)
 
     return (
         <form className="form" onSubmit={(e) => submit(e)}>
             <div className="form-body">
+                {errorTbx}
                 <div className="username">
                     <label className="form__label" htmlFor="username">Username </label>
                     <input className="form__input" type="text" id="username" value={username} onChange={e => onChange(e)} placeholder="Username" />

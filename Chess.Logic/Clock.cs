@@ -15,7 +15,7 @@ namespace Chess.Logic
         }
         public bool IsStopped { get; private set; }
 
-        public event Action TimedOut;
+        public event Action<PlayerColor> TimedOut;
 
         public Clock(int timeSec, int bonusSec, IPlayerSwitch playerSwitch)
         {
@@ -54,7 +54,7 @@ namespace Chess.Logic
                 {
                     CurrentTime = 0;
                     IsStopped = true;
-                    TimedOut?.Invoke();
+                    TimedOut?.Invoke(playerSwitch.CurrentPlayer);
                 }
             }
         }

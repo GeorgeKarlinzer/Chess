@@ -34,6 +34,12 @@ const Game = () => {
     let [gameState, setGameState] = useState<GameState>(null)
 
     useEffect(() => {
+        fetch(ApplicationPaths.isSearchinGame)
+            .then(x => x.text())
+            .then(x => setIsSearchingGame(x == 'true'));
+    }, [isInGame])
+
+    useEffect(() => {
         const newConnection = new HubConnectionBuilder()
             .withUrl(ApplicationPaths.hub)
             .withAutomaticReconnect()
@@ -45,7 +51,7 @@ const Game = () => {
             .then(x => x.text())
             .then(x => setIsSearchingGame(x == 'true'));
 
-        fetch(ApplicationPaths.getGameState, { method: "POST" })
+        fetch(ApplicationPaths.getGameState)
             .then(x => x.json())
             .then(x => {
                 if ('player' in x) {
@@ -62,7 +68,7 @@ const Game = () => {
                     connection.on('UpdateBoard', x => {
                         handleGameState(JSON.parse(x));
                     });
-                    connection.on('StartGame', x => {
+                    connection.on('StartGame', () => {
                         setIsInGame(true);
                         getGameState();
                     })
@@ -72,12 +78,15 @@ const Game = () => {
     }, [connection]);
 
     function handleGameState(state: GameState) {
-        setGameState(state);
-        setConverterColor(state.player);
+        try {
+            setGameState(state);
+            setConverterColor(state.player);
+        }
+        catch { }
     }
 
     async function getGameState() {
-        var response = await fetch(ApplicationPaths.getGameState, { method: "POST" });
+        var response = await fetch(ApplicationPaths.getGameState);
         var data = await response.json();
         handleGameState(data);
     }
@@ -99,11 +108,12 @@ const Game = () => {
     }
 
     function resign() {
-
+        fetch(ApplicationPaths.resign, { method: "POST" });
     }
 
     function closeGame() {
-
+        fetch(ApplicationPaths.closeGame, { method: "POST" })
+            .then(() => setIsInGame(false));
     }
 
     function offerDraw() {
@@ -135,16 +145,25 @@ const Game = () => {
             break;
     }
 
+    const closeGameBtn = gameState.status != gameStatus.inProgress ? (<button onClick={closeGame}>Close game</button>) : (<></>)
+    const resultP = gameState.status != gameStatus.inProgress ? (<p>{resultText}</p>) : (<></>)
+
     return (
         <div>
+            {closeGameBtn}
             <Board pieces={gameState.pieces} sendMove={sendMove}></Board>
-            <div className="timerDiv">
-                <Timer time={gameState.timersMap[topPlayer].remainMilliseconds} isPaused={!gameState.timersMap[topPlayer].isRunning} />
-                <Timer time={gameState.timersMap[botPlayer].remainMilliseconds} isPaused={!gameState.timersMap[botPlayer].isRunning} />
+            <div className="functionBoard">
+                <div className="timerDiv">
+                    <Timer time={gameState.timersMap[topPlayer].remainMilliseconds} isPaused={!gameState.timersMap[topPlayer].isRunning} />
+                    <Timer time={gameState.timersMap[botPlayer].remainMilliseconds} isPaused={!gameState.timersMap[botPlayer].isRunning} />
+                </div>
+                <div className="bttnContainer">
+                    <button className="funcBttn" onClick={resign}>Resign</button>
+                    <button className="funcBttn">Offer a draw</button>
+                </div>
+                {resultP}
             </div>
-            <p className="gameResult">{resultText}</p>
         </div>
-
     );
 }
 

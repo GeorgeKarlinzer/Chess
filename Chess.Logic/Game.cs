@@ -9,6 +9,7 @@ namespace Chess.Logic
     public class Game
     {
         private int currentPieceId;
+        private GameStatus _status;
 
         private readonly PlayerSwitch playerSwitch;
         private readonly Clock clock;
@@ -16,12 +17,21 @@ namespace Chess.Logic
         internal readonly List<Move> moves;
         internal readonly Dictionary<Vector2, Piece> piecesMap;
 
-        public event Action TimedOut
+        public event Action OnGameEnd;
+
+        public GameStatus Status
         {
-            add => clock.TimedOut += value;
-            remove => clock.TimedOut -= value;
+            get => _status;
+            set
+            {
+                if (_status == GameStatus.InProgress && value != GameStatus.InProgress)
+                {
+                    _status = value;
+                    OnGameEnd?.Invoke();
+                    OnGameEnd = null;
+                }
+            }
         }
-        public GameStatus Status { get; private set; }
         public bool IsCheck { get; private set; }
         public Dictionary<PlayerColor, TimerDto> TimersMap => clock.GetTimersMap();
 
@@ -33,10 +43,10 @@ namespace Chess.Logic
             piecesMap = new();
             moves = new();
             clock = new Clock(timeSec, bonusSec, playerSwitch);
-            clock.TimedOut += () => Status = GetStatus();
+            clock.TimedOut += Resign;
             _ = clock.RunTimer();
 
-            Status = GameStatus.InProgress;
+            _status = GameStatus.InProgress;
 
             GeneratePieces();
 
@@ -46,7 +56,12 @@ namespace Chess.Logic
         #region API
         public void Resign(PlayerColor player)
         {
+            Status = player == White ? GameStatus.BlacksWon : GameStatus.WhitesWon;
+        }
 
+        public void MakeDraw()
+        {
+            Status = GameStatus.Draw;
         }
 
         public List<PieceDto> GetPieces(PlayerColor requester)
