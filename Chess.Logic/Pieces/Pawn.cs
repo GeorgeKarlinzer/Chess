@@ -13,7 +13,7 @@ namespace Chess.Logic.Pieces
         private readonly Vector2 rightAttack;
         private readonly Vector2 leftAttack;
 
-        public Pawn(PlayerColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
+        public Pawn(PlayerColor color, Vector2 position, int id, Game game) : base(color, position, id, game)
         {
             startPosY = Color == White ? 1 : 6;
             promotionY = Color == White ? 7 : 0;
@@ -28,11 +28,11 @@ namespace Chess.Logic.Pieces
         {
             base.CalculateMoves();
 
-            if (board.CanMove(Position + oneStepUp))
+            if (game.CanMove(Position + oneStepUp))
             {
                 AddMoveOrPromotion(Position + oneStepUp, null);
 
-                if (Position.Y == startPosY && board.CanMove(Position + twoStepsUp))
+                if (Position.Y == startPosY && game.CanMove(Position + twoStepsUp))
                 {
                     AddMoveOrPromotion(Position + twoStepsUp, null);
                 }
@@ -48,7 +48,7 @@ namespace Chess.Logic.Pieces
 
                 PossibleAttacks.Add(Position + delta);
 
-                if (board.CanBeat(Position + delta, Color, out var attackedPiece))
+                if (game.CanBeat(Position + delta, Color, out var attackedPiece))
                 {
                     AddMoveOrPromotion(Position + delta, attackedPiece);
                     if (attackedPiece.GetType() == typeof(King))
@@ -59,10 +59,10 @@ namespace Chess.Logic.Pieces
                 }
                 else
                 {
-                    if (board.Moves.Count == 0)
+                    if (game.moves.Count == 0)
                         continue;
 
-                    var lastMove = board.Moves.Last();
+                    var lastMove = game.moves.Last();
 
                     if (Position.Y == enPassantY
                         && lastMove.Piece.GetType() == typeof(Pawn)
@@ -79,14 +79,14 @@ namespace Chess.Logic.Pieces
         {
             if (targetPos.Y == promotionY)
             {
-                PossibleMoves.Add(new Promotion<Knight>(this, attackedPiece, targetPos, board));
-                PossibleMoves.Add(new Promotion<Bishop>(this, attackedPiece, targetPos, board));
-                PossibleMoves.Add(new Promotion<Rook>(this, attackedPiece, targetPos, board));
-                PossibleMoves.Add(new Promotion<Queen>(this, attackedPiece, targetPos, board));
+                PossibleMoves.Add(new Promotion<Knight>(this, attackedPiece, targetPos, game));
+                PossibleMoves.Add(new Promotion<Bishop>(this, attackedPiece, targetPos, game));
+                PossibleMoves.Add(new Promotion<Rook>(this, attackedPiece, targetPos, game));
+                PossibleMoves.Add(new Promotion<Queen>(this, attackedPiece, targetPos, game));
             }
             else
             {
-                PossibleMoves.Add(new Move(this, attackedPiece, targetPos, board));
+                PossibleMoves.Add(new Move(this, attackedPiece, targetPos, game));
             }
         }
     }

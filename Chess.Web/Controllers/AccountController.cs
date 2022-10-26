@@ -12,7 +12,6 @@ using System.Security.Claims;
 namespace Chess.Web.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     [AllowAnonymous]
     public class AccountController : Controller
     {

@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Chess.Logic
+﻿namespace Chess.Logic
 {
     internal class PlayerSwitch : IPlayerSwitch
     {
-        public PlayerColor Switch(PlayerColor color) =>
-            color.IsWhite() ? PlayerColor.Black : PlayerColor.White;
+        public PlayerColor CurrentPlayer { get; private set; }
 
-        public PlayerColor SwitchBack(PlayerColor color) =>
-            Switch(color);
+        public PlayerSwitch(PlayerColor currentPlayer)
+        {
+            CurrentPlayer = currentPlayer;
+        }
 
-        public IEnumerable<PlayerColor> GetColors() =>
+        public void Switch() =>
+            CurrentPlayer = (PlayerColor)(1 - (int)CurrentPlayer);
+
+        public IEnumerable<PlayerColor> GetPlayers() =>
             new[] { PlayerColor.White, PlayerColor.Black };
     }
 }

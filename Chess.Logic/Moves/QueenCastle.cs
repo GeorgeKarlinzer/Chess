@@ -8,16 +8,16 @@ namespace Chess.Logic.Moves
     {
         private readonly Rook rook;
 
-        public QueenCastle(Piece piece, Rook rook, Board board) : 
-            base(piece, null, piece.Color == White ? VectorsMap["c1"] : VectorsMap["c8"], board)
+        public QueenCastle(Piece piece, Rook rook, Game game) : 
+            base(piece, null, piece.Color == White ? VectorsMap["c1"] : VectorsMap["c8"], game)
         {
             this.rook = rook;
         }
 
         public override void MakeMove()
         {
-            board.MovePiece(Piece, TargetPos, AttackedPiece);
-            board.MovePiece(rook, rook.Position + new Vector2(3, 0));
+            game.MovePiece(Piece, TargetPos, AttackedPiece);
+            game.MovePiece(rook, rook.Position + new Vector2(3, 0));
         }
     }
 }

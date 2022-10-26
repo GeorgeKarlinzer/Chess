@@ -7,16 +7,16 @@ namespace Chess.Logic.Moves
     {
         private readonly Rook rook;
 
-        public KingCastle(Piece piece, Rook rook, Board board) : 
-            base(piece, null, piece.Color.IsWhite() ? VectorsMap["g1"] : VectorsMap["g8"], board)
+        public KingCastle(Piece piece, Rook rook, Game game) : 
+            base(piece, null, piece.Color.IsWhite() ? VectorsMap["g1"] : VectorsMap["g8"], game)
         {
             this.rook = rook;
         }
 
         public override void MakeMove()
         {
-            board.MovePiece(Piece, TargetPos, AttackedPiece);
-            board.MovePiece(rook, rook.Position + new Vector2(-2, 0));
+            game.MovePiece(Piece, TargetPos, AttackedPiece);
+            game.MovePiece(rook, rook.Position + new Vector2(-2, 0));
         }
     }
 }

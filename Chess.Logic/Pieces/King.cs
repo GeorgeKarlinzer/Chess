@@ -6,7 +6,7 @@ namespace Chess.Logic.Pieces
 {
     internal class King : Piece
     {
-        public King(PlayerColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
+        public King(PlayerColor color, Vector2 position, int id, Game game) : base(color, position, id, game)
         {
         }
 
@@ -27,7 +27,7 @@ namespace Chess.Logic.Pieces
                 if (pos.IsValidChessPos())
                     PossibleAttacks.Add(pos);
 
-                if (board.CanBeat(pos, Color, out var attackedPiece) || board.CanMove(pos))
+                if (game.CanBeat(pos, Color, out var attackedPiece) || game.CanMove(pos))
                 {
                     PossibleMoves.Add(CreateMove(pos, attackedPiece));
                 }
@@ -40,17 +40,17 @@ namespace Chess.Logic.Pieces
                 var kingRookPos = Color.IsWhite() ? VectorsMap["h1"] : VectorsMap["h8"];
                 var queenRookPos = Color.IsWhite() ? VectorsMap["a1"] : VectorsMap["a8"];
 
-                if (board.PiecesMap.TryGetValue(kingRookPos, out var kingRook) && !kingRook.IsMoved
-                    && !board.PiecesMap.Keys.Any(x => breakKingCastlePoss.Contains(x)))
+                if (game.piecesMap.TryGetValue(kingRookPos, out var kingRook) && !kingRook.IsMoved
+                    && !game.piecesMap.Keys.Any(x => breakKingCastlePoss.Contains(x)))
                 {
-                    var move = new KingCastle(this, kingRook as Rook, board);
+                    var move = new KingCastle(this, kingRook as Rook, game);
                     PossibleMoves.Add(move);
                 }
 
-                if (board.PiecesMap.TryGetValue(queenRookPos, out var queenRook) && !queenRook.IsMoved
-                    && !board.PiecesMap.Keys.Any(x => breakQueenCastlePoss.Contains(x)))
+                if (game.piecesMap.TryGetValue(queenRookPos, out var queenRook) && !queenRook.IsMoved
+                    && !game.piecesMap.Keys.Any(x => breakQueenCastlePoss.Contains(x)))
                 {
-                    var move = new QueenCastle(this, queenRook as Rook, board);
+                    var move = new QueenCastle(this, queenRook as Rook, game);
                     PossibleMoves.Add(move);
                 }
             }

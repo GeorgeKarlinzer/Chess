@@ -68,7 +68,7 @@ const Register = () => {
             <div className="form-body">
                 <div className="username">
                     <label className="form__label" htmlFor="username">Username </label>
-                    <input className="form__input" type="text" id="username" value={username} onChange={e => onChange(e)} placeholder="UserName" />
+                    <input className="form__input" type="text" id="username" value={username} onChange={e => onChange(e)} placeholder="Username" />
                     <span className="error">{errors["username"]}</span>
                 </div>
                 <div className="email">

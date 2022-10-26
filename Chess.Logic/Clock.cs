@@ -8,66 +8,59 @@ namespace Chess.Logic
         private readonly IPlayerSwitch playerSwitch;
         private readonly int bonus;
 
-        private DateTime lastTimeStamp;
-        private PlayerColor currentPlayer;
-        public bool IsStopped { get; private set; }
-        public bool IsPaused { get; private set; }
-
-
         private int CurrentTime
         {
-            get => remainTimeMap[currentPlayer];
-            set => remainTimeMap[currentPlayer] = value;
+            get => remainTimeMap[playerSwitch.CurrentPlayer];
+            set => remainTimeMap[playerSwitch.CurrentPlayer] = value;
         }
+        public bool IsStopped { get; private set; }
+
+        public event Action TimedOut;
 
         public Clock(int timeSec, int bonusSec, IPlayerSwitch playerSwitch)
         {
-            remainTimeMap = new()
-            {
-                [PlayerColor.White] = timeSec * 1000,
-                [PlayerColor.Black] = timeSec * 1000
-            };
-            currentPlayer = PlayerColor.White;
+            this.playerSwitch = playerSwitch;
             IsStopped = false;
-            IsPaused = true;
+            remainTimeMap = new();
+
+            foreach (var player in playerSwitch.GetPlayers())
+                remainTimeMap[player] = timeSec * 1000;
 
             bonus = bonusSec * 1000;
-            this.playerSwitch = playerSwitch;
         }
-
-        public int GetTime(PlayerColor player) =>
-            remainTimeMap[player];
 
         public Dictionary<PlayerColor, TimerDto> GetTimersMap()
         {
             var timersMap = new Dictionary<PlayerColor, TimerDto>();
 
-            foreach (var color in playerSwitch.GetColors())
-                timersMap[color] = new(remainTimeMap[color], currentPlayer == color && !IsPaused && !IsStopped);
+            foreach (var player in playerSwitch.GetPlayers())
+                timersMap[player] = new(GetTime(player), IsRunningForPlayer(player));
 
             return timersMap;
         }
 
-        public void Press()
+        private bool IsRunningForPlayer(PlayerColor player) =>
+            playerSwitch.CurrentPlayer == player && !IsStopped;
+
+        public async Task RunTimer()
         {
-            if (IsStopped) return;
-
-            if (!IsPaused)
+            while (!IsStopped)
             {
-                var deltaTime = (int)(DateTime.UtcNow - lastTimeStamp).TotalMilliseconds;
+                var timeStamp = DateTime.UtcNow;
+                await Task.Delay(10);
+                var deltaTime = (int)(DateTime.UtcNow - timeStamp).TotalMilliseconds;
                 CurrentTime -= deltaTime - bonus;
-
-                if (CurrentTime <= 0)
+                if(CurrentTime <= 0)
                 {
                     CurrentTime = 0;
                     IsStopped = true;
+                    TimedOut?.Invoke();
                 }
             }
-
-            IsPaused = false;
-            lastTimeStamp = DateTime.UtcNow;
-            currentPlayer = playerSwitch.Switch(currentPlayer);
         }
+
+        public int GetTime(PlayerColor color) =>
+            remainTimeMap[color];
 
         public void Stop() =>
             IsStopped = true;

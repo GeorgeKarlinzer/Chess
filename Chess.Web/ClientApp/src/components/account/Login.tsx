@@ -8,13 +8,10 @@ const Login = () => {
     const navigate = useNavigate();
 
     let [username, setUsername] = useState("");
-    let [email, setEmail] = useState("");
     let [password, setPassword] = useState("");
-    let [errors, setErrors] = useState({});
 
     let states = {
         ["username"]: setUsername,
-        ["email"]: setEmail,
         ["password"]: setPassword,
     }
 
@@ -41,11 +38,12 @@ const Login = () => {
             body: JSON.stringify(body)
         };
 
-        const response = await fetch("account/login", requestOptions);
+        const response = await fetch(ApplicationPaths.login, requestOptions);
         const data = await response.text();
         if (data == "success") {
             SetSignIn(true);
             navigate("/");
+            window.location.reload();
         }
     }
 
@@ -54,8 +52,7 @@ const Login = () => {
             <div className="form-body">
                 <div className="username">
                     <label className="form__label" htmlFor="username">Username </label>
-                    <input className="form__input" type="text" id="username" value={username} onChange={e => onChange(e)} placeholder="UserName" />
-                    <span className="error">{errors["username"]}</span>
+                    <input className="form__input" type="text" id="username" value={username} onChange={e => onChange(e)} placeholder="Username" />
                 </div>
                 <div className="password">
                     <label className="form__label" htmlFor="password">Password </label>

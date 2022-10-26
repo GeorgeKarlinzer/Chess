@@ -12,15 +12,13 @@ namespace Chess.Web
         {
             Players = new();
             Game = game;
-            Players.Add(new(blackUsername, PlayerColor.Black));
-            Players.Add(new(whiteUsername, PlayerColor.White));
+            var rand = new Random().Next(0, 2);
+            Players.Add(new(blackUsername, (PlayerColor)rand));
+            Players.Add(new(whiteUsername, (PlayerColor)(1 - rand)));
         }
 
         public bool ContainsUser(string username)
             => Players.Any(x => x.Username == username);
-
-        public bool IsPlayersTurn(string username) =>
-            Game.CurrentPlayer == Players.First(x => x.Username == username).Color;
 
         public PlayerColor GetColor(string username) =>
             Players.First(x => x.Username == username).Color;

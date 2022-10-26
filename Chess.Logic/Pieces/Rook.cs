@@ -2,7 +2,7 @@
 {
     internal class Rook : Piece
     {
-        public Rook(PlayerColor color, Vector2 position, int id, Board board) : base(color, position, id, board)
+        public Rook(PlayerColor color, Vector2 position, int id, Game game) : base(color, position, id, game)
         {
         }
 

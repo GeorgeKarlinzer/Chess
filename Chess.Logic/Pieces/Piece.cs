@@ -28,7 +28,7 @@ namespace Chess.Logic.Pieces
             { typeof(King), "K" },
         };
 
-        protected Board board;
+        protected Game game;
 
         public int Id { get; }
         public string Name => PieceNamesMap[GetType()];
@@ -42,12 +42,12 @@ namespace Chess.Logic.Pieces
         public List<Vector2> PossibleAttacks { get; }
         public List<Vector2> KingAttacks { get; }
 
-        public Piece(PlayerColor color, Vector2 position, int id, Board board)
+        public Piece(PlayerColor color, Vector2 position, int id, Game game)
         {
             Color = color;
             Position = position;
             Id = id;
-            this.board = board;
+            this.game = game;
 
             PossibleMoves = new List<Move>();
             PossibleAttacks = new List<Vector2>();
@@ -73,14 +73,14 @@ namespace Chess.Logic.Pieces
 
                 PossibleAttacks.Add(targetPos);
 
-                if (board.CanMove(targetPos))
+                if (game.CanMove(targetPos))
                 {
                     PossibleMoves.Add(CreateMove(targetPos));
                 }
                 else
                 {
                     flag = true;
-                    if (board.CanBeat(targetPos, Color, out var attackedPiece))
+                    if (game.CanBeat(targetPos, Color, out var attackedPiece))
                     {
                         PossibleMoves.Add(CreateMove(targetPos, attackedPiece));
                         if (attackedPiece.GetType() == typeof(King))
@@ -97,6 +97,6 @@ namespace Chess.Logic.Pieces
         }
 
         protected Move CreateMove(Vector2 targetPos, Piece attackedPiece = null) =>
-            new(this, attackedPiece, targetPos, board);
+            new(this, attackedPiece, targetPos, game);
     }
 }

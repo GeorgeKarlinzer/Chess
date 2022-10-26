@@ -20,7 +20,7 @@ const Home = () => {
     else if (IsSignedIn())
         return (<Game />);
     else
-        navigate(ApplicationPaths.login)
+        navigate(ApplicationPaths.loginRoute)
 }
 
 export default Home

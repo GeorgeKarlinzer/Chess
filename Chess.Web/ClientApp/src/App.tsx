@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
+import Login from './components/account/Login';
 import { Layout } from './components/Layout';
 import './custom.css';
 

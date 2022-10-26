@@ -7,16 +7,11 @@ const Logout = () => {
     console.log('render logout')
     const navigate = useNavigate();
 
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify("")
-    };
-
-    fetch(ApplicationPaths.logout, requestOptions)
+    fetch(ApplicationPaths.logout, { method: "POST" })
         .then(() => {
             SetSignIn(false);
             navigate("/");
+            window.location.reload();
         });
 
     return (<h1>Loging out...</h1>)

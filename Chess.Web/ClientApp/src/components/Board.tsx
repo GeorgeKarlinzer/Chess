@@ -1,4 +1,4 @@
-﻿import React, { Component, useState } from 'react';
+﻿import React, { Component, useEffect, useState } from 'react';
 import Vector2 from '../Models/Vector2';
 import ChoosePiece from './ChoosePiece';
 import MoveSquare from './MoveSquare';
@@ -27,6 +27,10 @@ interface BoardState {
 
 export const Board = (props: BoardProps) => {
     let [state, setState] = useState<BoardState>({ selectedPiece: null, isChoosingPiece: false })
+
+    useEffect(() => {
+        setState({ selectedPiece: null, isChoosingPiece: false });
+    }, [props])
 
     function onClick() {
         if (state.selectedPiece != null) {

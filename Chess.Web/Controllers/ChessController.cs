@@ -1,19 +1,16 @@
 ﻿using Chess.Logic;
 using Chess.Web.Data;
 using Chess.Web.Hubs;
-using Chess.Web.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Security.Claims;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Chess.Web.Controllers
 {
-
     [ApiController]
     [Authorize]
     public class ChessController : Controller
@@ -33,28 +30,10 @@ namespace Chess.Web.Controllers
             this.hubContext = hubContext;
         }
 
-        //[HttpGet]
-        //[Route("~/chess/getpieces")]
-        //public object GetPieces()
-        //{
-        //    var gameState = new GameState()
-        //    {
-        //        Pieces = game.Pieces,
-        //        IsCheck = game.IsCheck,
-        //        IsEnd = game.IsEnd,
-        //        CurrentPlayer = game.CurrentPlayer,
-        //        RemainTimes = game.RemainTimes
-        //    };
-
-        //    var jsonSettings = new JsonSerializerSettings
-        //    {
-        //        ContractResolver = new CamelCasePropertyNamesContractResolver()
-        //    };
-
-        //    var json = JsonConvert.SerializeObject(gameState, jsonSettings);
-
-        //    return json;
-        //}
+        [HttpGet]
+        [Route("~/chess/issearchinggame")]
+        public bool IsSearchingGame() =>
+            usersQueue.Contains(CurrentUser);
 
         [HttpPost]
         [Route("~/chess/searchgame")]
@@ -67,20 +46,39 @@ namespace Chess.Web.Controllers
 
             if (usersQueue.Count == 2)
             {
-                var game = new Game(3 * 60, 2);
+                var game = new Game(10, 0);
                 var match = new Match(usersQueue[1], usersQueue[0], game);
+                game.TimedOut += () => SendGameState(match);
                 matches.Add(match);
 
                 foreach (var player in match.Players)
                 {
                     var userId = GetUserId(player.Username);
                     hubContext.Clients.User(userId)
-                        .StartGame(player.Color);
+                        .StartGame();
                 }
                 usersQueue.Clear();
             }
 
-            return string.Empty;
+            return "true";
+        }
+
+        [HttpPost]
+        [Route("~/chess/offerdraw")]
+        public bool OfferDraw()
+        {
+
+
+            return true;
+        }
+
+        [HttpPost]
+        [Route("~/chess/resign")]
+        public bool Resign()
+        {
+
+
+            return true;
         }
 
         [HttpPost]
@@ -89,7 +87,7 @@ namespace Chess.Web.Controllers
         {
             var match = matches.FirstOrDefault(x => x.ContainsUser(CurrentUser));
             if (match is null)
-                return "Current user doesn't participate in any game";
+                return string.Empty;
 
             var gameState = new GameState(match.Game, match.GetColor(CurrentUser));
 
@@ -107,24 +105,24 @@ namespace Chess.Web.Controllers
             if (match is null)
                 return "Current user doesn't participate in any game";
 
-            if (!match.IsPlayersTurn(CurrentUser))
-                return "Invalid move";
-
             var isValidMove = match.Game.TryMakeMove(moveCode);
             
             if (!isValidMove)
                 return "Invalid move";
 
-            var players = match.Players.Select(x => x.Username);
+            SendGameState(match);
 
+            return string.Empty;
+        }
+
+        private void SendGameState(Match match)
+        {
             foreach (var player in match.Players)
             {
                 var userId = GetUserId(player.Username);
                 var json = ToJson(new GameState(match.Game, player.Color));
                 hubContext.Clients.User(userId).UpdateBoard(json);
             }
-
-            return string.Empty;
         }
 
         private static string ToJson(object obj)

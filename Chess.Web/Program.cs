@@ -10,10 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = new PathString("/Account/Login");
-    });
+    .AddCookie();
 
 builder.Services.AddSignalR();
 
@@ -45,10 +42,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
-
-app.MapControllerRoute(
-    name: "authorization",
-    pattern: "{controller=authorization}/{action=Index}/{id?}");
 
 app.MapFallbackToFile("index.html");
 app.MapHub<ChessHub>("/chessHub");

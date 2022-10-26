@@ -5,7 +5,7 @@ namespace Chess.Logic.Moves
 {
     internal class Move
     {
-        protected readonly Board board;
+        protected readonly Game game;
 
         public Piece Piece { get; }
         public Piece AttackedPiece { get; }
@@ -13,19 +13,19 @@ namespace Chess.Logic.Moves
         public Vector2 TargetPos { get; }
         public string Code { get; protected set; }
 
-        public Move(Piece piece, Piece attackedPiece, Vector2 targetPos, Board board)
+        public Move(Piece piece, Piece attackedPiece, Vector2 targetPos, Game game)
         {
             Piece = piece;
             AttackedPiece = attackedPiece;
             TargetPos = targetPos;
             SourcePos = piece.Position;
-            this.board = board;
+            this.game = game;
             Code = $"{Positions.PositionsMap[TargetPos]}";
         }
 
         public virtual void MakeMove()
         {
-            board.MovePiece(Piece, TargetPos, AttackedPiece);
+            game.MovePiece(Piece, TargetPos, AttackedPiece);
         }
     }
 }

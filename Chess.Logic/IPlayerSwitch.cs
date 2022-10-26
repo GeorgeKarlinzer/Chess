@@ -2,8 +2,8 @@
 {
     internal interface IPlayerSwitch
     {
-        PlayerColor Switch(PlayerColor color);
-        PlayerColor SwitchBack(PlayerColor color);
-        IEnumerable<PlayerColor> GetColors();
+        PlayerColor CurrentPlayer { get; }
+        void Switch();
+        IEnumerable<PlayerColor> GetPlayers();
     }
 }

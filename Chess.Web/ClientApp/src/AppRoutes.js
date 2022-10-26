@@ -10,15 +10,15 @@ const AppRoutes = [
         element: <Home/>
     },
     {
-        path: `${ApplicationPaths.register}`,
+        path: `/${ApplicationPaths.registerRoute}`,
         element: <Register/>
     },
     {
-        path: `${ApplicationPaths.login}`,
+        path: `/${ApplicationPaths.loginRoute}`,
         element: <Login/>
     },
     {
-        path: `~/${ApplicationPaths.logout}`,
+        path: `/${ApplicationPaths.logoutRoute}`,
         element: <Logout/>
     }
 ];

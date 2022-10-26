@@ -8,7 +8,7 @@ namespace Chess.Logic
         public List<PieceDto> Pieces { get; }
         public bool IsCheck { get; }
         public GameStatus Status { get; }
-        public PlayerColor CurrentPlayer { get; }
+        public PlayerColor Player { get; }
         [JsonConverter(typeof(DictionaryWithEnumKeyConverter<PlayerColor, TimerDto>))]
         public Dictionary<PlayerColor, TimerDto> TimersMap { get; }
 
@@ -17,7 +17,7 @@ namespace Chess.Logic
             Pieces = game.GetPieces(requester);
             IsCheck = game.IsCheck;
             Status = game.Status;
-            CurrentPlayer = game.CurrentPlayer;
+            Player = requester;
             TimersMap = game.TimersMap;
         }
     }

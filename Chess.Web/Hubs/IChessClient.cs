@@ -6,7 +6,7 @@ namespace Chess.Web.Hubs
     {
         Task UpdateBoard(string gameStateJson);
 
-        Task StartGame(PlayerColor color);
+        Task StartGame();
 
         Task EndGame(string gameStateJson);
     }
