@@ -8,6 +8,7 @@ import { setConverterColor } from '../Models/Converter';
 import gameStatus from '../Models/GameStatus';
 import Piece from '../Models/Piece';
 import playerColor from '../Models/PlayerColor';
+import GameMenu from './GameMenu';
 
 export interface SendMoveFunc {
     (code: string): void
@@ -91,12 +92,6 @@ const Game = () => {
         handleGameState(data);
     }
 
-    async function searchGame() {
-        let response = await fetch(ApplicationPaths.searchGame, { method: "POST" });
-        let data = await response.text();
-        setIsSearchingGame(data == 'true');
-    }
-
     function sendMove(code) {
         const requestOptions = {
             method: 'POST',
@@ -121,10 +116,7 @@ const Game = () => {
     }
 
     if (!isInGame) {
-        if (isSearchingGame)
-            return (<p>Searching game...</p>)
-
-        return (<button onClick={searchGame}>Search game</button>)
+        return (<GameMenu></GameMenu>)
     }
 
     if (gameState == null)

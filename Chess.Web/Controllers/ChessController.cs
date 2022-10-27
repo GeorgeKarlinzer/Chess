@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -19,7 +20,7 @@ namespace Chess.Web.Controllers
         private readonly IHubContext<ChessHub, IChessClient> hubContext;
         private readonly ChessContext context = new();
 
-        private static readonly List<string> usersQueue = new();
+        private static readonly Dictionary<ClockSettings, List<string>> waitingUsersMap = new();
         private static readonly List<Match> matches = new();
 
         private string CurrentUser => User!.Identity!.Name!;
@@ -30,24 +31,36 @@ namespace Chess.Web.Controllers
             this.hubContext = hubContext;
         }
 
+
         [HttpGet]
-        [Route("~/chess/issearchinggame")]
-        public bool IsSearchingGame() =>
-            usersQueue.Contains(CurrentUser);
+        [Route("~/chess/getsearchinggame")]
+        public string GetSearchingGameJson() =>
+            GetSearchingGame().ToJson();
+            
+        private ClockSettings GetSearchingGame() =>
+            waitingUsersMap.FirstOrDefault(x => x.Value.Contains(CurrentUser)).Key;
 
         [HttpPost]
         [Route("~/chess/searchgame")]
-        public string SearchGame()
+        public string SearchGame([FromBody] ClockSettings settings)
         {
-            if (usersQueue.Contains(CurrentUser) || matches.Any(x => x.ContainsUser(CurrentUser)))
-                return "Player's playing the game or waiting for the game";
+            if(matches.Any(x => x.ContainsUser(CurrentUser)))
+                return "Player's playing the game";
 
-            usersQueue.Add(CurrentUser);
+            var searchingGame = GetSearchingGame();
+            if (searchingGame != default)
+                waitingUsersMap[searchingGame].Remove(CurrentUser);
 
-            if (usersQueue.Count == 2)
+            if (!waitingUsersMap.ContainsKey(settings))
+                waitingUsersMap[settings] = new();
+
+            var users = waitingUsersMap[settings];
+            users.Add(CurrentUser);
+
+            if (users.Count == 2)
             {
-                var game = new Game(10, 0);
-                var match = new Match(usersQueue[1], usersQueue[0], game);
+                var game = new Game(settings.Time, settings.Bonus);
+                var match = new Match(users[0], users[1], game);
                 game.OnGameEnd += () => SendGameState(match);
                 matches.Add(match);
 
@@ -57,7 +70,7 @@ namespace Chess.Web.Controllers
                     hubContext.Clients.User(userId)
                         .StartGame();
                 }
-                usersQueue.Clear();
+                waitingUsersMap.Remove(settings);
             }
 
             return "true";
