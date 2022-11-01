@@ -1,47 +1,38 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import ApplicationPaths from '../ApplicationPaths';
+import { ClockSettings } from './ClockSettings';
 import './GameMenu.css'
 
-class ClockSetting {
-    pref: string;
-    clock: string;
-    time: number;
-    bonus: number;
-
-    constructor(time: number, bonus: number) {
-        if (time < 3)
-            this.pref = "Bullet";
-        else if (time < 10)
-            this.pref = "Blitz";
-        else if (time < 30)
-            this.pref = "Rapid";
-        else
-            this.pref = "Classic";
-
-        this.clock = `${time}+${bonus}`;
-        this.time = time;
-        this.bonus = bonus;
-    }
-}
 const clocks = [
-    new ClockSetting(1, 0),
-    new ClockSetting(2, 1),
-    new ClockSetting(3, 0),
-    new ClockSetting(3, 2),
-    new ClockSetting(5, 0),
-    new ClockSetting(5, 3),
-    new ClockSetting(10, 0),
-    new ClockSetting(10, 5),
-    new ClockSetting(15, 10),
-    new ClockSetting(30, 0),
-    new ClockSetting(30, 20),
+    new ClockSettings(1 * 60, 0),
+    new ClockSettings(2 * 60, 1),
+    new ClockSettings(3 * 60, 0),
+    new ClockSettings(3 * 60, 2),
+    new ClockSettings(5 * 60, 0),
+    new ClockSettings(5 * 60, 3),
+    new ClockSettings(10 * 60, 0),
+    new ClockSettings(10 * 60, 5),
+    new ClockSettings(15 * 60, 10),
+    new ClockSettings(30 * 60, 0),
+    new ClockSettings(30 * 60, 20),
 ]
 
 const GameMenu = () => {
 
-    var [selectedClock, setSelectedClock] = useState<ClockSetting>(null);
+    var [selectedClock, setSelectedClock] = useState<ClockSettings>(null);
 
-    async function searchGame(clock: ClockSetting) {
+    useEffect(() => {
+        fetch(ApplicationPaths.getSearchingGame)
+            .then(x => x.json())
+            .then(x => {
+                if (x.time == 0 && x.bonus == 0)
+                    setSelectedClock(null);
+                else
+                    setSelectedClock(new ClockSettings(x.time, x.bonus));
+            });
+    }, [])
+
+    async function searchGame(clock: ClockSettings) {
         const body = JSON.stringify({ time: clock.time, bonus: clock.bonus });
         const requestOptions = {
             method: 'POST',
@@ -56,22 +47,25 @@ const GameMenu = () => {
     }
 
     async function stopSearch() {
-
+        var response = await fetch(ApplicationPaths.stopSearch, { method: "POST" });
+        var data = await response.text();
+        if (data == 'true')
+            setSelectedClock(null);
     }
 
     return (
         <div className="gamePools">
             {clocks.map(x => {
-                if (x == selectedClock)
+                if (JSON.stringify(x) == JSON.stringify(selectedClock))
                     return (
-                        <div key={x.clock} onClick={stopSearch} className="test" >
-                            <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                        <div key={x.getClock()} onClick={stopSearch} >
+                            Waiting for opponent...
                         </div>
                     )
                 return (
-                    <div key={x.clock} onClick={() => searchGame(x)} >
-                        <div className="clock noselect">{x.clock}</div>
-                        <div className="pref noselect">{x.pref}</div>
+                    <div key={x.getClock()} onClick={() => searchGame(x)} >
+                        <div className="clock noselect">{x.getClock()}</div>
+                        <div className="pref noselect">{x.getPref()}</div>
                     </div>
                 )
             })}

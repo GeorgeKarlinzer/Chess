@@ -10,12 +10,14 @@
 
     game: "chess/game",
     resign: "chess/resign",
+    getTime: "chess/gettime",
     makeMove: "chess/makemove",
     offerDraw: "chess/offerdraw",
     closeGame: "chess/closegame",
     searchGame: "chess/searchgame",
+    stopSearch: "chess/stopsearch",
     getGameState: "chess/getgamestate",
-    isSearchinGame: "chess/issearchinggame",
+    getSearchingGame: "chess/getsearchinggame",
 
     hub: "https://localhost:7130/chesshub"
 }

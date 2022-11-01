@@ -1,4 +1,5 @@
 ﻿using Chess.Logic;
+using Chess.Logic.Dtos;
 using Chess.Web.Data;
 using Chess.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +31,6 @@ namespace Chess.Web.Controllers
             _logger = logger;
             this.hubContext = hubContext;
         }
-
 
         [HttpGet]
         [Route("~/chess/getsearchinggame")]
@@ -77,6 +77,18 @@ namespace Chess.Web.Controllers
         }
 
         [HttpPost]
+        [Route("~/chess/stopsearch")]
+        public bool StopSearch()
+        {
+            var settings = GetSearchingGame();
+
+            if (settings != default)
+                waitingUsersMap[settings].Remove(CurrentUser);
+
+            return true;
+        }
+
+        [HttpPost]
         [Route("~/chess/offerdraw")]
         public bool OfferDraw()
         {
@@ -94,6 +106,9 @@ namespace Chess.Web.Controllers
             var player = match.Players.First(x => x.Username == CurrentUser);
 
             match.Players.Remove(player);
+
+            if (match.Players.Count == 0)
+                matches.Remove(match);
         }
 
         [HttpPost]
@@ -106,6 +121,17 @@ namespace Chess.Web.Controllers
 
             match.Game.Resign(match.GetColor(CurrentUser));
             return true;
+        }
+
+        [HttpGet]
+        [Route("~/chess/gettime")]
+        public string GetTime([FromQuery] PlayerColor player)
+        {
+            var match = GetMatch();
+            if (match is null)
+                return new TimerDto(-1, false).ToJson();
+
+            return match.Game.TimersMap[player].ToJson();
         }
 
         [HttpGet]

@@ -27,6 +27,7 @@ namespace Chess.Logic
                 if (_status == GameStatus.InProgress && value != GameStatus.InProgress)
                 {
                     _status = value;
+                    clock.Stop();
                     OnGameEnd?.Invoke();
                     OnGameEnd = null;
                 }

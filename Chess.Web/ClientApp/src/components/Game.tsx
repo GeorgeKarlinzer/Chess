@@ -8,6 +8,7 @@ import { setConverterColor } from '../Models/Converter';
 import gameStatus from '../Models/GameStatus';
 import Piece from '../Models/Piece';
 import playerColor from '../Models/PlayerColor';
+import { ClockSettings } from './ClockSettings';
 import GameMenu from './GameMenu';
 
 export interface SendMoveFunc {
@@ -30,14 +31,11 @@ interface GameState {
 const Game = () => {
 
     let [connection, setConnection] = useState<HubConnection>(null);
-    let [isSearchingGame, setIsSearchingGame] = useState(false);
     let [isInGame, setIsInGame] = useState(false);
     let [gameState, setGameState] = useState<GameState>(null)
 
     useEffect(() => {
-        fetch(ApplicationPaths.isSearchinGame)
-            .then(x => x.text())
-            .then(x => setIsSearchingGame(x == 'true'));
+        
     }, [isInGame])
 
     useEffect(() => {
@@ -47,10 +45,6 @@ const Game = () => {
             .build();
 
         setConnection(newConnection);
-
-        fetch(ApplicationPaths.isSearchinGame)
-            .then(x => x.text())
-            .then(x => setIsSearchingGame(x == 'true'));
 
         fetch(ApplicationPaths.getGameState)
             .then(x => x.json())
@@ -112,11 +106,11 @@ const Game = () => {
     }
 
     function offerDraw() {
-
+        
     }
 
     if (!isInGame) {
-        return (<GameMenu></GameMenu>)
+        return (<GameMenu/>)
     }
 
     if (gameState == null)
@@ -146,8 +140,12 @@ const Game = () => {
             <Board pieces={gameState.pieces} sendMove={sendMove}></Board>
             <div className="functionBoard">
                 <div className="timerDiv">
-                    <Timer time={gameState.timersMap[topPlayer].remainMilliseconds} isPaused={!gameState.timersMap[topPlayer].isRunning} />
-                    <Timer time={gameState.timersMap[botPlayer].remainMilliseconds} isPaused={!gameState.timersMap[botPlayer].isRunning} />
+                    <Timer time={gameState.timersMap[topPlayer].remainMilliseconds}
+                        isPaused={!gameState.timersMap[topPlayer].isRunning}
+                        color={topPlayer} />
+                    <Timer time={gameState.timersMap[botPlayer].remainMilliseconds}
+                        isPaused={!gameState.timersMap[botPlayer].isRunning}
+                        color={botPlayer} />
                 </div>
                 <div className="bttnContainer">
                     <button className="funcBttn" onClick={resign}>Resign</button>

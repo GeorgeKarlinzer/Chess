@@ -1,11 +1,26 @@
 ﻿import React, { useEffect, useState } from 'react';
+import ApplicationPaths from '../ApplicationPaths';
+import playerColor from '../Models/PlayerColor';
 
 interface TimerProps {
     isPaused: boolean,
-    time: number
+    time: number,
+    color: playerColor
 }
 
 const Timer = (props: TimerProps) => {
+    if (Math.random() < 0.01) {
+        console.log('sync timer with server');
+        fetch(`${ApplicationPaths.getTime}?player=${props.color}`)
+            .then(x => x.json())
+            .then(x => {
+                if (x.remainMilliseconds != -1)
+                    setTime(x.remainMilliseconds);
+                console.log('synced timer')
+            })
+
+    }
+
     let [time, setTime] = useState(props.time);
     let [lastSync, setLastSync] = useState(props.time);
 
@@ -23,9 +38,10 @@ const Timer = (props: TimerProps) => {
 
     useEffect(() => {
         let timer: NodeJS.Timeout
+        const timeStamp = Date.now();
         if (!props.isPaused) {
             timer = setTimeout(() => {
-                if (!props.isPaused) setTime(time - 100)
+                setTime(time - (Date.now() - timeStamp))
             }, 100);
         }
         return () => clearTimeout(timer)
