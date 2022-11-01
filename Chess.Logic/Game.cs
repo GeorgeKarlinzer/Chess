@@ -105,6 +105,8 @@ namespace Chess.Logic
         }
         #endregion
 
+        #region Modifyings
+
         private GameStatus GetStatus()
         {
             var hasMoves = piecesMap.Values.Where(x => x.Color == playerSwitch.CurrentPlayer)
@@ -193,6 +195,8 @@ namespace Chess.Logic
             else
                 repeatPositionMap[str]++;
         }
+
+        #endregion
 
         #region Moves calculating
 
