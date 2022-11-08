@@ -149,7 +149,7 @@ const Game = () => {
                 </div>
                 <div className="bttnContainer">
                     <button className="funcBttn" onClick={resign}>Resign</button>
-                    <button className="funcBttn">Offer a draw</button>
+                    {/*<button className="funcBttn">Offer a draw</button>*/}
                 </div>
                 {resultP}
             </div>
